@@ -1,14 +1,13 @@
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+
 export function createClient() {
-  return {
-    auth: {
-      async signInWithPassword({ email, password }: any) {
-        // Stub implementation, will be replaced by P1
-        return { error: null, data: { user: { email } } }
-      },
-      async signUp({ email, password }: any) {
-        // Stub implementation, will be replaced by P1
-        return { error: null, data: { user: { email } } }
-      }
-    }
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Missing Supabase env variables: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY')
   }
+
+  return createSupabaseClient(supabaseUrl, supabaseAnonKey)
 }
+
