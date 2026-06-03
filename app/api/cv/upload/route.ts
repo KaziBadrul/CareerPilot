@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-// import { OpenAIEmbeddings } from '@langchain/openai'
-import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers"
+import { GoogleGenAI } from '@google/genai'
 import { QdrantClient } from '@qdrant/js-client-rest'
-import pdf from 'pdf-parse-fork' // Cleaned up parser completely safe for Turbopack
+import pdf from 'pdf-parse-fork'
 import mammoth from 'mammoth'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -12,25 +11,48 @@ const supabase = createClient(
     process.env.SUPABASE_SERVICE_KEY!
 )
 
-const embeddings = new HuggingFaceTransformersEmbeddings({
-    model: "Xenova/all-MiniLM-L6-v2",
-});
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! })
 
-// Added checkCompatibility config to silence server compatibility logs
+// Gemini embedding fixed to 768 dimensions for storage efficiency
+const EMBED_DIM = 768
+
+const embeddings = {
+  embedDocuments: async (texts: string[]): Promise<number[][]> => {
+    const results: number[][] = []
+    for (const text of texts) {
+      const response = await ai.models.embedContent({
+        model: 'gemini-embedding-001',
+        contents: text,
+        config: { outputDimensionality: EMBED_DIM },
+      })
+      results.push(response.embeddings![0].values!)
+    }
+    return results
+  },
+  embedQuery: async (text: string): Promise<number[]> => {
+    const response = await ai.models.embedContent({
+      model: 'gemini-embedding-001',
+      contents: text,
+      config: { outputDimensionality: EMBED_DIM },
+    })
+    return response.embeddings![0].values!
+  }
+}
+
 const qdrant = new QdrantClient({
     url: process.env.QDRANT_URL,
     apiKey: process.env.QDRANT_API_KEY,
     checkCompatibility: false
 })
 
-const COLLECTION = 'cv_chunks_local'
+const COLLECTION = 'cv_chunks_gemini'
 
 async function ensureCollection() {
     const collections = await qdrant.getCollections()
     const exists = collections.collections.some(c => c.name === COLLECTION)
     if (!exists) {
         await qdrant.createCollection(COLLECTION, {
-            vectors: { size: 384, distance: 'Cosine' }
+            vectors: { size: EMBED_DIM, distance: 'Cosine' }
         })
     }
 
@@ -41,7 +63,7 @@ async function ensureCollection() {
             wait: true
         })
     } catch (indexErr) {
-        console.error("Failed to create payload index for user_id:", indexErr)
+        // Index may already exist — safe to ignore
     }
 }
 
@@ -102,13 +124,11 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Missing required form fields" }, { status: 400 })
         }
 
-        // Extract binary data
         const buffer = Buffer.from(await file.arrayBuffer())
         let rawText = ''
 
         if (file.name.endsWith('.pdf')) {
             try {
-                // pdf-parse-fork reads the standard node buffer right away without crashing
                 const parsed = await pdf(buffer)
                 rawText = parsed.text
             } catch (pdfError) {
@@ -123,11 +143,9 @@ export async function POST(req: NextRequest) {
         // Upload file to Supabase Storage
         const storagePath = `cvs/${userId}/${file.name}`
         uploadedStoragePath = storagePath
-        await supabase.storage.from('documents').upload(storagePath, buffer, {
-            upsert: true
-        })
+        await supabase.storage.from('documents').upload(storagePath, buffer, { upsert: true })
 
-        // Ensure user exists in public.users table (acts as automatic sync if DB triggers aren't configured)
+        // Ensure user exists in public.users
         try {
             const { data: userExists } = await supabase
                 .from('users')
@@ -139,26 +157,17 @@ export async function POST(req: NextRequest) {
                 let email = ''
                 try {
                     const { data: authUser } = await supabase.auth.admin.getUserById(userId)
-                    if (authUser?.user) {
-                        email = authUser.user.email || ''
-                    }
+                    if (authUser?.user) email = authUser.user.email || ''
                 } catch (authErr) {
-                    console.error("Failed to fetch user details from auth admin API:", authErr)
+                    console.error("Failed to fetch auth user:", authErr)
                 }
-
-                const { error: insertUserError } = await supabase
-                    .from('users')
-                    .insert({ id: userId, email })
-
-                if (insertUserError) {
-                    console.error("Failed to auto-provision user in public.users:", insertUserError)
-                }
+                await supabase.from('users').insert({ id: userId, email })
             }
         } catch (provisionErr) {
             console.error("User provisioning check failed:", provisionErr)
         }
 
-        // Save to DB
+        // Save CV metadata to DB
         const { data: cvDoc, error: dbError } = await supabase
             .from('cv_documents')
             .upsert({ user_id: userId, filename: file.name, raw_text: rawText, storage_path: storagePath })
@@ -170,23 +179,22 @@ export async function POST(req: NextRequest) {
         }
         createdCvDocId = cvDoc.id
 
-        // Chunk and embed text data
+        // Chunk, embed, and store in Qdrant
         await ensureCollection()
         const chunks = chunkCV(rawText)
 
-        // Delete old vectors for this specific user path
+        // Delete old vectors for this user
         await qdrant.delete(COLLECTION, {
             filter: { must: [{ key: 'user_id', match: { value: userId } }] }
         })
 
-        // Embed and upsert items in batches of 20
+        // Embed in batches of 20
         const batchSize = 20
         for (let i = 0; i < chunks.length; i += batchSize) {
             const batch = chunks.slice(i, i + batchSize)
             const vectors = await embeddings.embedDocuments(batch.map(c => c.content))
 
             const points = batch.map((chunk, j) => ({
-                // Using uuidv4 guarantees string-format unique IDs for Qdrant storage entries
                 id: uuidv4(),
                 vector: vectors[j],
                 payload: {
@@ -200,21 +208,22 @@ export async function POST(req: NextRequest) {
             await qdrant.upsert(COLLECTION, { points })
         }
 
-        return NextResponse.json({ success: true, chunks: chunks.length })
+        return NextResponse.json({
+            success: true,
+            chunks: chunks.length,
+            sectionsFound: [...new Set(chunks.map(c => c.section))],
+            filename: file.name,
+            cvId: cvDoc.id,
+        })
 
     } catch (globalError) {
         console.error("Global Route Handler failure:", globalError)
 
-        // Clean up created DB and Storage entries in case of failures during vector ingestion
         try {
-            if (createdCvDocId) {
-                await supabase.from('cv_documents').delete().eq('id', createdCvDocId)
-            }
-            if (uploadedStoragePath) {
-                await supabase.storage.from('documents').remove([uploadedStoragePath])
-            }
+            if (createdCvDocId) await supabase.from('cv_documents').delete().eq('id', createdCvDocId)
+            if (uploadedStoragePath) await supabase.storage.from('documents').remove([uploadedStoragePath])
         } catch (cleanupError) {
-            console.error("Failed to clean up records after global failure:", cleanupError)
+            console.error("Cleanup failed:", cleanupError)
         }
 
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
