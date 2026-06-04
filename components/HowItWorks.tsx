@@ -27,7 +27,7 @@ export function HowItWorks() {
   return (
     <section id="how" style={{
       padding: '100px 24px',
-      background: 'rgba(255,255,255,0.01)',
+      background: 'var(--surface)',
       borderTop: '1px solid var(--border)',
       borderBottom: '1px solid var(--border)',
     }}>

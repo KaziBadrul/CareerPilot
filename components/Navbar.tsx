@@ -29,9 +29,9 @@ export function Navbar() {
         right:      0,
         zIndex:     100,
         transition: 'all 0.3s ease',
-        background: scrolled ? 'rgba(10,15,30,0.92)' : 'transparent',
+        background: scrolled ? 'var(--surface-2)' : 'transparent',
         backdropFilter: scrolled ? 'blur(16px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
+        borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
       }}
     >
       <nav style={{

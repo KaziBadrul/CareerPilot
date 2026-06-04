@@ -11,7 +11,7 @@ export default function AssistantPage() {
   }, [])
   if (!userId) return <div style={{ padding: 40, color: 'var(--muted)' }}>Loading…</div>
   return (
-    <div style={{ height: '100vh', background: '#0d1424' }}>
+    <div style={{ height: '100vh', background: 'var(--navy)' }}>
       <ChatWindow userId={userId} />
     </div>
   )

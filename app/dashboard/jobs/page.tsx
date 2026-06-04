@@ -11,7 +11,7 @@ export default function JobsPage() {
   }, [])
   if (!userId) return <div style={{ padding: 40, color: 'var(--muted)' }}>Loading…</div>
   return (
-    <div style={{ minHeight: '100vh', background: '#0d1424' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--navy)' }}>
       <JobSearchPage userId={userId} hasCV={true} />
     </div>
   )

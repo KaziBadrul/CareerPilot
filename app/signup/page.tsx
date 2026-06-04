@@ -89,7 +89,7 @@ export default function SignupPage() {
             <p style={{ color: 'var(--muted)', fontSize: '13px', margin: 0 }}>We sent a confirmation link to <strong style={{ color: 'var(--cream)' }}>{email}</strong></p>
           </div>
         ) : (
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-2)', borderRadius: '16px', padding: '28px' }}>
+          <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border-2)', borderRadius: '16px', padding: '28px' }}>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {(['email', 'password'] as const).map(field => (
                 <div key={field}>
@@ -103,14 +103,14 @@ export default function SignupPage() {
                     required
                     placeholder={field === 'email' ? 'you@example.com' : '6+ characters'}
                     style={{
-                      width: '100%', background: 'rgba(255,255,255,0.04)',
-                      border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px',
+                      width: '100%', background: 'var(--field)',
+                      border: '1px solid var(--border)', borderRadius: '8px',
                       padding: '11px 14px', color: 'var(--cream)', fontSize: '14px',
                       outline: 'none', transition: 'border-color 0.2s',
                       fontFamily: 'var(--font-body)', boxSizing: 'border-box',
                     }}
                     onFocus={e => (e.currentTarget.style.borderColor = 'rgba(37,99,235,0.6)')}
-                    onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
+                    onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
                   />
                 </div>
               ))}

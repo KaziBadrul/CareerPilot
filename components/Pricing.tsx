@@ -70,8 +70,8 @@ export function Pricing() {
       }}>
         {PLANS.map(plan => (
           <div key={plan.name} style={{
-            background: plan.highlighted ? 'rgba(37,99,235,0.08)' : 'rgba(255,255,255,0.02)',
-            border: `1px solid ${plan.highlighted ? 'rgba(37,99,235,0.4)' : 'rgba(255,255,255,0.08)'}`,
+            background: plan.highlighted ? 'rgba(37,99,235,0.08)' : 'var(--surface)',
+            border: `1px solid ${plan.highlighted ? 'rgba(37,99,235,0.4)' : 'var(--border)'}`,
             borderRadius: '16px',
             padding: '32px',
             position: 'relative',
@@ -114,7 +114,7 @@ export function Pricing() {
             <Link href={plan.href} style={{
               display: 'block',
               textAlign: 'center',
-              background: plan.highlighted ? 'var(--blue)' : 'rgba(255,255,255,0.06)',
+              background: plan.highlighted ? 'var(--blue)' : 'var(--field)',
               color: '#fff',
               textDecoration: 'none',
               fontSize: '14px',
@@ -122,18 +122,18 @@ export function Pricing() {
               padding: '11px 20px',
               borderRadius: '8px',
               marginBottom: '24px',
-              border: plan.highlighted ? 'none' : '1px solid rgba(255,255,255,0.1)',
+              border: plan.highlighted ? 'none' : '1px solid var(--border)',
               transition: 'all 0.2s',
             }}
               onMouseEnter={e => {
                 const el = e.currentTarget as HTMLElement
                 if (plan.highlighted) el.style.background = 'var(--blue-glow)'
-                else el.style.background = 'rgba(255,255,255,0.1)'
+                else el.style.background = 'var(--surface-hover)'
               }}
               onMouseLeave={e => {
                 const el = e.currentTarget as HTMLElement
                 if (plan.highlighted) el.style.background = 'var(--blue)'
-                else el.style.background = 'rgba(255,255,255,0.06)'
+                else el.style.background = 'var(--field)'
               }}
             >
               {plan.cta}

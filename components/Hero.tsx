@@ -76,8 +76,8 @@ export function Hero() {
       <div style={{
         position: 'absolute', inset: 0,
         backgroundImage: `
-          linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)
+          linear-gradient(var(--grid-line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid-line) 1px, transparent 1px)
         `,
         backgroundSize: '60px 60px',
         maskImage: 'radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 80%)',
@@ -182,8 +182,8 @@ export function Hero() {
           }}
             onMouseEnter={e => {
               const el = e.currentTarget as HTMLElement
-              el.style.borderColor = 'rgba(255,255,255,0.25)'
-              el.style.background = 'rgba(255,255,255,0.04)'
+              el.style.borderColor = 'var(--border-2)'
+              el.style.background = 'var(--surface-hover)'
             }}
             onMouseLeave={e => {
               const el = e.currentTarget as HTMLElement
@@ -197,7 +197,7 @@ export function Hero() {
 
         {/* Typing demo box */}
         <div className="animate-fadeUp delay-400" style={{
-          background: 'rgba(255,255,255,0.03)',
+          background: 'var(--surface-2)',
           border: '1px solid var(--border-2)',
           borderRadius: '14px',
           padding: '18px 24px',

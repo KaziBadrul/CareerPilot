@@ -1,7 +1,7 @@
 /* ============================================================
    CareerPilot — Global Styles
    Font: Syne (display) + DM Sans (body)
-   Theme: Deep navy + electric blue + off-white
+   Theme: Light by default, with dark mode via [data-theme='dark']
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
@@ -11,6 +11,38 @@
 @tailwind utilities;
 
 :root {
+  color-scheme: light;
+
+  --navy:       #f7f8fb;
+  --navy-2:     #ffffff;
+  --navy-3:     #eef2f8;
+  --navy-4:     #d8e0ec;
+  --blue:       #2563eb;
+  --blue-glow:  #1d4ed8;
+  --blue-light: #2563eb;
+  --cream:      #1f2937;
+  --cream-2:    #334155;
+  --white:      #0f172a;
+  --muted:      #64748b;
+  --border:     rgba(15,23,42,0.10);
+  --border-2:   rgba(15,23,42,0.16);
+  --surface:    rgba(255,255,255,0.72);
+  --surface-2:  rgba(255,255,255,0.92);
+  --surface-hover: rgba(15,23,42,0.045);
+  --field:      rgba(255,255,255,0.88);
+  --grid-line:  rgba(15,23,42,0.055);
+  --modal-bg:   linear-gradient(180deg, #ffffff 0%, #f4f7fb 100%);
+  --overlay:    rgba(15,23,42,0.32);
+  --shadow:     0 25px 50px -12px rgba(15,23,42,0.18), 0 0 0 1px rgba(15,23,42,0.04);
+  --code-bg:    rgba(15,23,42,0.06);
+
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
   --navy:       #0a0f1e;
   --navy-2:     #111827;
   --navy-3:     #1a2236;
@@ -24,9 +56,15 @@
   --muted:      #94a3b8;
   --border:     rgba(255,255,255,0.08);
   --border-2:   rgba(255,255,255,0.14);
-
-  --font-display: 'Syne', sans-serif;
-  --font-body:    'DM Sans', sans-serif;
+  --surface:    rgba(255,255,255,0.02);
+  --surface-2:  rgba(255,255,255,0.03);
+  --surface-hover: rgba(255,255,255,0.04);
+  --field:      rgba(255,255,255,0.04);
+  --grid-line:  rgba(255,255,255,0.02);
+  --modal-bg:   linear-gradient(180deg, #131b2e 0%, #0d1424 100%);
+  --overlay:    rgba(0,0,0,0.6);
+  --shadow:     0 25px 50px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+  --code-bg:    rgba(255,255,255,0.08);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -57,8 +95,8 @@ body {
 .prose-chat h1 { font-size: 1rem; }
 .prose-chat h2 { font-size: 0.9375rem; }
 .prose-chat h3 { font-size: 0.875rem; }
-.prose-chat code { font-size: 0.78rem; background: rgba(255,255,255,0.06); border-radius: 4px; padding: 1px 5px; border: 1px solid rgba(255,255,255,0.1); }
-.prose-chat pre { background: #060d1a; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.875rem; overflow-x: auto; margin: 0.65rem 0; }
+.prose-chat code { font-size: 0.78rem; background: var(--code-bg); border-radius: 4px; padding: 1px 5px; border: 1px solid var(--border); }
+.prose-chat pre { background: var(--navy-2); border: 1px solid var(--border); border-radius: 8px; padding: 0.875rem; overflow-x: auto; margin: 0.65rem 0; }
 .prose-chat pre code { background: none; border: none; padding: 0; font-size: 0.78rem; }
 .prose-chat strong { font-weight: 600; color: var(--white); }
 

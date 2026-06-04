@@ -83,7 +83,7 @@ export default function LoginPage() {
 
         {/* Card */}
         <div style={{
-          background: 'rgba(255,255,255,0.03)',
+          background: 'var(--surface-2)',
           border: '1px solid var(--border-2)',
           borderRadius: '16px',
           padding: '28px',
@@ -102,8 +102,8 @@ export default function LoginPage() {
                 placeholder="you@example.com"
                 style={{
                   width: '100%',
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: 'var(--field)',
+                  border: '1px solid var(--border)',
                   borderRadius: '8px',
                   padding: '11px 14px',
                   color: 'var(--cream)',
@@ -114,7 +114,7 @@ export default function LoginPage() {
                   boxSizing: 'border-box',
                 }}
                 onFocus={e => (e.currentTarget.style.borderColor = 'rgba(37,99,235,0.6)')}
-                onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
+                onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
               />
             </div>
 
@@ -132,8 +132,8 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   style={{
                     width: '100%',
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.1)',
+                    background: 'var(--field)',
+                    border: '1px solid var(--border)',
                     borderRadius: '8px',
                     padding: '11px 40px 11px 14px',
                     color: 'var(--cream)',
@@ -144,7 +144,7 @@ export default function LoginPage() {
                     boxSizing: 'border-box',
                   }}
                   onFocus={e => (e.currentTarget.style.borderColor = 'rgba(37,99,235,0.6)')}
-                  onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
+                  onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
                 />
                 <button
                   type="button"

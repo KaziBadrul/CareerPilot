@@ -90,8 +90,8 @@ export function Features() {
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
               style={{
-                background: isHovered ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
-                border: `1px solid ${isHovered ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.06)'}`,
+                background: isHovered ? 'var(--surface-hover)' : 'var(--surface)',
+                border: `1px solid ${isHovered ? 'var(--border-2)' : 'var(--border)'}`,
                 borderRadius: '16px',
                 padding: '28px',
                 cursor: 'default',
@@ -109,7 +109,7 @@ export function Features() {
                 fontFamily: 'var(--font-display)',
                 fontSize: '80px',
                 fontWeight: 800,
-                color: 'rgba(255,255,255,0.03)',
+                color: 'var(--border)',
                 lineHeight: 1,
                 userSelect: 'none',
               }}>
@@ -151,7 +151,7 @@ export function Features() {
               </p>
               <p style={{
                 fontSize: '11.5px',
-                color: isHovered ? f.color : 'rgba(255,255,255,0.25)',
+                color: isHovered ? f.color : 'var(--muted)',
                 transition: 'color 0.25s',
                 margin: 0,
               }}>

@@ -70,10 +70,10 @@ export function ChatWindow({ userId }: { userId: string }) {
   const renderContent = (text: string) =>
     text
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;font-size:0.85em">$1</code>')
-      .replace(/^### (.*)/gm, '<h3 style="font-weight:600;margin:12px 0 4px;font-size:0.9rem;color:#fff">$1</h3>')
-      .replace(/^## (.*)/gm,  '<h2 style="font-weight:600;margin:14px 0 6px;font-size:0.95rem;color:#fff">$1</h2>')
-      .replace(/^# (.*)/gm,   '<h1 style="font-weight:600;margin:14px 0 6px;font-size:1rem;color:#fff">$1</h1>')
+      .replace(/`([^`]+)`/g, '<code style="background:var(--code-bg);padding:1px 5px;border-radius:4px;font-size:0.85em">$1</code>')
+      .replace(/^### (.*)/gm, '<h3 style="font-weight:600;margin:12px 0 4px;font-size:0.9rem;color:var(--white)">$1</h3>')
+      .replace(/^## (.*)/gm,  '<h2 style="font-weight:600;margin:14px 0 6px;font-size:0.95rem;color:var(--white)">$1</h2>')
+      .replace(/^# (.*)/gm,   '<h1 style="font-weight:600;margin:14px 0 6px;font-size:1rem;color:var(--white)">$1</h1>')
       .replace(/^[-•] (.*)/gm, '<li style="margin-left:18px;margin-bottom:3px;list-style:disc">$1</li>')
       .replace(/^\d+\. (.*)/gm, '<li style="margin-left:18px;margin-bottom:3px;list-style:decimal">$1</li>')
       .replace(/\n/g, '<br/>')
@@ -104,9 +104,9 @@ export function ChatWindow({ userId }: { userId: string }) {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               {QUICK_ACTIONS.map(({ icon: Icon, label, prompt }) => (
                 <button key={label} onClick={() => send(prompt)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'left', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', borderRadius: '10px', padding: '12px 14px', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'all 0.15s' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'left', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '10px', padding: '12px 14px', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'all 0.15s' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(37,99,235,0.4)'; (e.currentTarget as HTMLElement).style.background = 'rgba(37,99,235,0.06)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.02)' }}>
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLElement).style.background = 'var(--surface)' }}>
                   <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'rgba(37,99,235,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Icon size={14} color="var(--blue-light)" />
                   </div>
@@ -119,10 +119,10 @@ export function ChatWindow({ userId }: { userId: string }) {
 
         {messages.map(msg => (
           <div key={msg.id} style={{ display: 'flex', gap: '10px', maxWidth: '760px', flexDirection: msg.role === 'user' ? 'row-reverse' : 'row', marginLeft: msg.role === 'user' ? 'auto' : 0, width: '100%' }}>
-            <div style={{ width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0, marginTop: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: msg.role === 'user' ? 'var(--blue)' : 'rgba(255,255,255,0.06)', border: msg.role === 'assistant' ? '1px solid var(--border)' : 'none' }}>
+            <div style={{ width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0, marginTop: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: msg.role === 'user' ? 'var(--blue)' : 'var(--field)', border: msg.role === 'assistant' ? '1px solid var(--border)' : 'none' }}>
               {msg.role === 'user' ? <User size={12} color="#fff" /> : <Bot size={12} color="var(--muted)" />}
             </div>
-            <div style={{ borderRadius: '12px', padding: '10px 14px', fontSize: '13.5px', maxWidth: '85%', background: msg.role === 'user' ? 'var(--blue)' : 'rgba(255,255,255,0.03)', border: msg.role === 'assistant' ? '1px solid var(--border)' : 'none', color: msg.role === 'user' ? '#fff' : 'var(--cream)', lineHeight: 1.65 }}>
+            <div style={{ borderRadius: '12px', padding: '10px 14px', fontSize: '13.5px', maxWidth: '85%', background: msg.role === 'user' ? 'var(--blue)' : 'var(--surface-2)', border: msg.role === 'assistant' ? '1px solid var(--border)' : 'none', color: msg.role === 'user' ? '#fff' : 'var(--cream)', lineHeight: 1.65 }}>
               {msg.role === 'user'
                 ? <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.content}</p>
                 : <div dangerouslySetInnerHTML={{ __html: renderContent(msg.content) }} />}
@@ -133,12 +133,12 @@ export function ChatWindow({ userId }: { userId: string }) {
         <div ref={bottomRef} />
       </div>
 
-      <div style={{ borderTop: '1px solid var(--border)', padding: '16px 24px', background: 'rgba(255,255,255,0.01)' }}>
+      <div style={{ borderTop: '1px solid var(--border)', padding: '16px 24px', background: 'var(--surface)' }}>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end', maxWidth: '760px', margin: '0 auto' }}>
           <textarea ref={inputRef} value={input} onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(input) } }}
             placeholder="Ask anything about your career…" rows={1} disabled={loading}
-            style={{ flex: 1, resize: 'none', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-2)', borderRadius: '10px', padding: '10px 14px', color: 'var(--cream)', fontSize: '13.5px', outline: 'none', fontFamily: 'var(--font-body)', maxHeight: '120px', opacity: loading ? 0.5 : 1 }}
+            style={{ flex: 1, resize: 'none', background: 'var(--field)', border: '1px solid var(--border-2)', borderRadius: '10px', padding: '10px 14px', color: 'var(--cream)', fontSize: '13.5px', outline: 'none', fontFamily: 'var(--font-body)', maxHeight: '120px', opacity: loading ? 0.5 : 1 }}
             onInput={e => { const t = e.currentTarget; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 120) + 'px' }}
             onFocus={e => (e.currentTarget.style.borderColor = 'rgba(37,99,235,0.5)')}
             onBlur={e => (e.currentTarget.style.borderColor = 'var(--border-2)')} />

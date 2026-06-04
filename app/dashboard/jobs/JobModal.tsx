@@ -168,7 +168,7 @@ export function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "rgba(0,0,0,0.6)",
+        background: "var(--overlay)",
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
         padding: "24px",
@@ -181,14 +181,13 @@ export function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
           width: "100%",
           maxWidth: "800px",
           maxHeight: "calc(100vh - 48px)",
-          background: "linear-gradient(180deg, #131b2e 0%, #0d1424 100%)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          background: "var(--modal-bg)",
+          border: "1px solid var(--border)",
           borderRadius: "24px",
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
-          boxShadow:
-            "0 25px 50px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05)",
+          boxShadow: "var(--shadow)",
           animation: "slideUp 0.25s ease-out",
         }}
       >
@@ -197,7 +196,7 @@ export function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
           style={{
             padding: "28px 32px 20px",
             borderBottom: "1px solid var(--border)",
-            background: "rgba(19,27,46,0.95)",
+            background: "var(--surface-2)",
             backdropFilter: "blur(8px)",
             flexShrink: 0,
           }}
@@ -222,7 +221,7 @@ export function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
                     borderRadius: "12px",
                     flexShrink: 0,
                     objectFit: "cover",
-                    background: "rgba(255,255,255,0.06)",
+                    background: "var(--field)",
                     border: "1px solid var(--border)",
                   }}
                   onError={(e) => {
@@ -325,7 +324,7 @@ export function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  background: "rgba(255,255,255,0.04)",
+                  background: "var(--field)",
                   border: "1px solid var(--border)",
                   borderRadius: "10px",
                   color: "var(--muted)",
@@ -333,11 +332,11 @@ export function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
                   transition: "all 0.2s",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+                  e.currentTarget.style.background = "var(--surface-hover)";
                   e.currentTarget.style.color = "var(--cream)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                  e.currentTarget.style.background = "var(--field)";
                   e.currentTarget.style.color = "var(--muted)";
                 }}
               >
@@ -399,7 +398,7 @@ export function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
                   padding: "10px 18px",
                   fontSize: "14px",
                   fontWeight: 600,
-                  background: "rgba(255,255,255,0.04)",
+                  background: "var(--field)",
                   color: "var(--muted)",
                   border: "1px solid var(--border-2)",
                   borderRadius: "10px",
@@ -409,7 +408,7 @@ export function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
                   cursor: "pointer",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+                  e.currentTarget.style.borderColor = "var(--border-2)";
                   e.currentTarget.style.color = "var(--cream)";
                 }}
                 onMouseLeave={(e) => {
@@ -462,7 +461,7 @@ export function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
           <SectionTitle>Job Details</SectionTitle>
           <div
             style={{
-              background: "rgba(255,255,255,0.015)",
+              background: "var(--surface)",
               border: "1px solid var(--border)",
               borderRadius: "14px",
               padding: "8px 20px",
@@ -614,7 +613,7 @@ export function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
               <SectionTitle>Description</SectionTitle>
               <div
                 style={{
-                  background: "rgba(255,255,255,0.015)",
+                  background: "var(--surface)",
                   border: "1px solid var(--border)",
                   borderRadius: "14px",
                   padding: "20px 24px",
@@ -762,7 +761,7 @@ export function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
               <SectionTitle>Company</SectionTitle>
               <div
                 style={{
-                  background: "rgba(255,255,255,0.015)",
+                  background: "var(--surface)",
                   border: "1px solid var(--border)",
                   borderRadius: "14px",
                   padding: "8px 20px",
@@ -912,7 +911,7 @@ export function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
               <SectionTitle>Contact</SectionTitle>
               <div
                 style={{
-                  background: "rgba(255,255,255,0.015)",
+                  background: "var(--surface)",
                   border: "1px solid var(--border)",
                   borderRadius: "14px",
                   padding: "8px 20px",
@@ -983,7 +982,7 @@ export function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
               <SectionTitle>Links</SectionTitle>
               <div
                 style={{
-                  background: "rgba(255,255,255,0.015)",
+                  background: "var(--surface)",
                   border: "1px solid var(--border)",
                   borderRadius: "14px",
                   padding: "8px 20px",
@@ -1034,4 +1033,3 @@ export function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
     </div>
   );
 }
-// ...existing code...
