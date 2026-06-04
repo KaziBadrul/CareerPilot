@@ -17,26 +17,26 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! })
 const EMBED_DIM = 768
 
 const embeddings = {
-  embedDocuments: async (texts: string[]): Promise<number[][]> => {
-    const results: number[][] = []
-    for (const text of texts) {
-      const response = await ai.models.embedContent({
-        model: 'gemini-embedding-001',
-        contents: text,
-        config: { outputDimensionality: EMBED_DIM },
-      })
-      results.push(response.embeddings![0].values!)
+    embedDocuments: async (texts: string[]): Promise<number[][]> => {
+        const results: number[][] = []
+        for (const text of texts) {
+            const response = await ai.models.embedContent({
+                model: 'gemini-embedding-001',
+                contents: text,
+                config: { outputDimensionality: EMBED_DIM },
+            })
+            results.push(response.embeddings![0].values!)
+        }
+        return results
+    },
+    embedQuery: async (text: string): Promise<number[]> => {
+        const response = await ai.models.embedContent({
+            model: 'gemini-embedding-001',
+            contents: text,
+            config: { outputDimensionality: EMBED_DIM },
+        })
+        return response.embeddings![0].values!
     }
-    return results
-  },
-  embedQuery: async (text: string): Promise<number[]> => {
-    const response = await ai.models.embedContent({
-      model: 'gemini-embedding-001',
-      contents: text,
-      config: { outputDimensionality: EMBED_DIM },
-    })
-    return response.embeddings![0].values!
-  }
 }
 
 const qdrant = new QdrantClient({

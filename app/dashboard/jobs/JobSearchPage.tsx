@@ -1,15 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { JobCard } from './JobCard'
-import { Search, Loader2, Briefcase, AlertCircle, Sparkles } from 'lucide-react'
-
-type Job = {
-  id: string; title: string; company: string; location: string | null
-  salary: string; deadline: string | null; url: string
-  description: string | null; postedAt: string | null
-  fitScore: number; reasoning: string | null
-}
+import { JobModal } from './JobModal'
+import { Search, Loader2, Briefcase, AlertCircle, Sparkles, MapPin, X } from 'lucide-react'
+import type { Job } from './types'
 
 const EXAMPLES = [
   'ML internships in Dhaka open this month',
@@ -19,18 +14,20 @@ const EXAMPLES = [
 ]
 
 export function JobSearchPage({ userId, hasCV }: { userId: string; hasCV: boolean }) {
-  const [query, setQuery]       = useState('')
-  const [jobs, setJobs]         = useState<Job[]>([])
-  const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState('')
-  const [parsed, setParsed]     = useState<any>(null)
-  const [searched, setSearched] = useState(false)
+  const [query, setQuery]             = useState('')
+  const [jobs, setJobs]               = useState<Job[]>([])
+  const [loading, setLoading]         = useState(false)
+  const [error, setError]             = useState('')
+  const [parsed, setParsed]           = useState<any>(null)
+  const [searched, setSearched]       = useState(false)
+  const [locationFilter, setLocationFilter] = useState<string>('')
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null)
 
   const search = async (q?: string) => {
     const sq = (q ?? query).trim()
     if (!sq || loading) return
     if (q) setQuery(q)
-    setLoading(true); setError(''); setSearched(true)
+    setLoading(true); setError(''); setSearched(true); setLocationFilter('')
     try {
       const res  = await fetch('/api/jobs/search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, query: sq }) })
       const data = await res.json()
@@ -42,6 +39,20 @@ export function JobSearchPage({ userId, hasCV }: { userId: string; hasCV: boolea
       setError(err.message ?? 'Something went wrong')
     } finally { setLoading(false) }
   }
+
+  // Derive unique locations from fetched jobs
+  const locationOptions = useMemo(() => {
+    const locs = jobs
+      .map(j => j.location)
+      .filter((l): l is string => !!l && l.trim() !== '')
+    return Array.from(new Set(locs)).sort()
+  }, [jobs])
+
+  // Apply location filter
+  const displayedJobs = useMemo(() => {
+    if (!locationFilter) return jobs
+    return jobs.filter(j => j.location === locationFilter)
+  }, [jobs, locationFilter])
 
   return (
     <div style={{ maxWidth: '740px', margin: '0 auto', padding: '32px 24px' }}>
@@ -103,12 +114,70 @@ export function JobSearchPage({ userId, hasCV }: { userId: string; hasCV: boolea
 
       {!loading && jobs.length > 0 && (
         <>
-          <p style={{ fontSize: '13px', color: 'var(--muted)', margin: '0 0 12px' }}>
-            <span style={{ color: 'var(--cream)', fontWeight: 500 }}>{jobs.length} jobs</span>
-            {parsed && <> for "{parsed.keyword}"{parsed.country ? ` in ${parsed.country}` : ''}</>}
-          </p>
+          {/* Results header + location filter */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginBottom: '12px' }}>
+            <p style={{ fontSize: '13px', color: 'var(--muted)', margin: 0 }}>
+              <span style={{ color: 'var(--cream)', fontWeight: 500 }}>
+                {displayedJobs.length}{locationFilter ? ` of ${jobs.length}` : ''} jobs
+              </span>
+              {parsed && <> for &ldquo;{parsed.keyword}&rdquo;{parsed.country ? ` in ${parsed.country}` : ''}</>}
+            </p>
+
+            {/* Location filter */}
+            {locationOptions.length > 1 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <MapPin size={12} color="var(--muted)" />
+                <div style={{ position: 'relative' }}>
+                  <select
+                    value={locationFilter}
+                    onChange={e => setLocationFilter(e.target.value)}
+                    style={{
+                      appearance: 'none',
+                      background: 'rgba(255,255,255,0.04)',
+                      border: '1px solid var(--border-2)',
+                      borderRadius: '8px',
+                      color: locationFilter ? 'var(--cream)' : 'var(--muted)',
+                      fontSize: '12px',
+                      fontFamily: 'var(--font-body)',
+                      padding: '5px 28px 5px 10px',
+                      cursor: 'pointer',
+                      outline: 'none',
+                    }}
+                  >
+                    <option value="">All locations</option>
+                    {locationOptions.map(loc => (
+                      <option key={loc} value={loc}>{loc}</option>
+                    ))}
+                  </select>
+                  {/* Caret */}
+                  <span style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--muted)', fontSize: '10px' }}>▾</span>
+                </div>
+                {locationFilter && (
+                  <button
+                    onClick={() => setLocationFilter('')}
+                    title="Clear filter"
+                    style={{ display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', padding: '2px' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--cream)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}
+                  >
+                    <X size={13} />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {jobs.map(job => <JobCard key={job.id} job={job} userId={userId} />)}
+            {displayedJobs.length > 0
+              ? displayedJobs.map(job => (
+                  <JobCard key={job.id} job={job} userId={userId} onSelect={() => setSelectedJob(job)} />
+                ))
+              : (
+                <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--muted)', fontSize: '13px' }}>
+                  No jobs match the selected location.
+                </div>
+              )
+            }
           </div>
         </>
       )}
@@ -118,6 +187,11 @@ export function JobSearchPage({ userId, hasCV }: { userId: string; hasCV: boolea
           <Briefcase size={24} style={{ opacity: 0.3, marginBottom: '10px' }} />
           <p style={{ fontSize: '13px', margin: 0 }}>No jobs found. Try broader keywords.</p>
         </div>
+      )}
+
+      {/* Job detail modal */}
+      {selectedJob && (
+        <JobModal job={selectedJob} onClose={() => setSelectedJob(null)} />
       )}
     </div>
   )

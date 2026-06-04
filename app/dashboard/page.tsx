@@ -14,7 +14,8 @@ import {
   Calendar, 
   FileUp,
   Briefcase,
-  MessageSquare
+  MessageSquare,
+  Trash2
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -43,6 +44,9 @@ export default function DashboardPage() {
   const [uploadError, setUploadError] = useState('')
   const [uploadSuccess, setUploadSuccess] = useState(false)
   const [dragActive, setDragActive] = useState(false)
+
+  // Delete state
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const supabase = createClient()
 
@@ -87,6 +91,29 @@ export default function DashboardPage() {
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/login')
+  }
+
+  const handleDeleteDocument = async (docId: string) => {
+    if (!user || deletingId) return
+    setDeletingId(docId)
+    try {
+      const res = await fetch('/api/cv/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentId: docId, userId: user.id }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        console.error('Delete failed:', data.error)
+      } else {
+        // Optimistically remove from UI, then refresh
+        setDocuments(prev => prev.filter(d => d.id !== docId))
+      }
+    } catch (err) {
+      console.error('Delete error:', err)
+    } finally {
+      setDeletingId(null)
+    }
   }
 
   // Drag and drop handlers
@@ -626,6 +653,7 @@ export default function DashboardPage() {
                         justifyContent: 'space-between',
                         gap: '12px',
                         transition: 'border-color 0.2s',
+                        opacity: deletingId === doc.id ? 0.5 : 1,
                       }}
                         onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)')}
                         onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
@@ -649,6 +677,42 @@ export default function DashboardPage() {
                             </div>
                           </div>
                         </div>
+                        {/* Delete button */}
+                        <button
+                          onClick={() => handleDeleteDocument(doc.id)}
+                          disabled={!!deletingId}
+                          title="Delete document"
+                          style={{
+                            flexShrink: 0,
+                            width: '30px',
+                            height: '30px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: 'transparent',
+                            border: '1px solid transparent',
+                            borderRadius: '7px',
+                            cursor: deletingId ? 'not-allowed' : 'pointer',
+                            color: 'var(--muted)',
+                            transition: 'all 0.2s',
+                          }}
+                          onMouseEnter={e => {
+                            if (!deletingId) {
+                              e.currentTarget.style.background = 'rgba(239,68,68,0.1)'
+                              e.currentTarget.style.borderColor = 'rgba(239,68,68,0.25)'
+                              e.currentTarget.style.color = '#f87171'
+                            }
+                          }}
+                          onMouseLeave={e => {
+                            e.currentTarget.style.background = 'transparent'
+                            e.currentTarget.style.borderColor = 'transparent'
+                            e.currentTarget.style.color = 'var(--muted)'
+                          }}
+                        >
+                          {deletingId === doc.id
+                            ? <Loader2 size={13} className="animate-spin" />
+                            : <Trash2 size={13} />}
+                        </button>
                       </div>
                     ))}
                   </div>
