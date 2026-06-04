@@ -12,7 +12,9 @@ import {
   AlertCircle, 
   Loader2, 
   Calendar, 
-  FileUp 
+  FileUp,
+  Briefcase,
+  MessageSquare
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -237,7 +239,7 @@ export default function DashboardPage() {
 
           {/* Navigation Links */}
           <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{
+            <Link href="/dashboard" style={{
               background: 'rgba(37,99,235,0.08)',
               border: '1px solid rgba(37,99,235,0.2)',
               borderRadius: '8px',
@@ -248,10 +250,47 @@ export default function DashboardPage() {
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
+              textDecoration: 'none',
             }}>
               <Zap size={16} />
               Overview
-            </div>
+            </Link>
+
+            <Link href="/dashboard/jobs" style={{
+              borderRadius: '8px',
+              padding: '10px 14px',
+              fontSize: '14.5px',
+              fontWeight: 500,
+              color: 'var(--muted)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              textDecoration: 'none',
+              transition: 'all 0.2s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'var(--cream)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--muted)' }}>
+              <Briefcase size={16} />
+              Job hunter
+            </Link>
+
+            <Link href="/dashboard/assistant" style={{
+              borderRadius: '8px',
+              padding: '10px 14px',
+              fontSize: '14.5px',
+              fontWeight: 500,
+              color: 'var(--muted)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              textDecoration: 'none',
+              transition: 'all 0.2s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'var(--cream)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--muted)' }}>
+              <MessageSquare size={16} />
+              AI assistant
+            </Link>
           </nav>
         </div>
 
@@ -332,6 +371,60 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
+
+          {/* Quick Access to Pillars — shown once a CV is indexed */}
+          {documents.length > 0 && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '16px',
+              marginBottom: '40px',
+            }} className="content-grid">
+              <Link href="/dashboard/jobs" style={{
+                background: 'rgba(37,99,235,0.06)',
+                border: '1px solid rgba(37,99,235,0.2)',
+                borderRadius: '16px',
+                padding: '24px',
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '16px',
+                transition: 'all 0.2s',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(37,99,235,0.1)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(37,99,235,0.06)')}>
+                <div style={{ width: '44px', height: '44px', background: 'rgba(37,99,235,0.15)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Briefcase size={20} color="var(--blue-light)" />
+                </div>
+                <div>
+                  <p style={{ margin: '0 0 3px', fontSize: '15px', fontWeight: 600, color: 'var(--white)', fontFamily: 'var(--font-display)' }}>Job Hunter</p>
+                  <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--muted)' }}>Search jobs, get fit scores</p>
+                </div>
+              </Link>
+
+              <Link href="/dashboard/assistant" style={{
+                background: 'rgba(124,58,237,0.06)',
+                border: '1px solid rgba(124,58,237,0.2)',
+                borderRadius: '16px',
+                padding: '24px',
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '16px',
+                transition: 'all 0.2s',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(124,58,237,0.1)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(124,58,237,0.06)')}>
+                <div style={{ width: '44px', height: '44px', background: 'rgba(124,58,237,0.15)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <MessageSquare size={20} color="#a78bfa" />
+                </div>
+                <div>
+                  <p style={{ margin: '0 0 3px', fontSize: '15px', fontWeight: 600, color: 'var(--white)', fontFamily: 'var(--font-display)' }}>AI Assistant</p>
+                  <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--muted)' }}>Readiness, gaps, roadmaps, letters</p>
+                </div>
+              </Link>
+            </div>
+          )}
 
           {/* Content Grid */}
           <div style={{

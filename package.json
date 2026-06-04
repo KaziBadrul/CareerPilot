@@ -9,11 +9,11 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@google/genai": "^2.7.0",
+    "@google/genai": "^2.8.0",
     "@qdrant/js-client-rest": "^1.18.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.107.0",
-    "apify-client": "^2.9.4",
+    "apify-client": "^2.23.4",
     "date-fns": "^4.4.0",
     "lucide-react": "^0.400.0",
     "mammoth": "^1.12.0",

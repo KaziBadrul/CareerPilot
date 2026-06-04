@@ -1,32 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { retrieveCV, embedText, cosineSimilarity } from '@/src/lib/rag'
+import { retrieveCV, embedText, cosineSimilarity } from '@/lib/rag'
 import { ApifyClient } from 'apify-client'
-import OpenAI from 'openai'
+import { GoogleGenAI } from '@google/genai'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! })
 const apify = new ApifyClient({ token: process.env.APIFY_API_TOKEN })
 
-// Parse natural language query into structured form
+// Parse natural language into structured search params
 async function parseQuery(query: string) {
   try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [{
-        role: 'user',
-        content: `Parse this job search query. Return ONLY valid JSON, no markdown.
-Schema: {"keyword":string,"country":string,"remote_only":boolean}
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: `Parse this job search query into JSON. Return ONLY valid JSON, no markdown fences.
+Schema: {"keyword": string, "country": string, "remote_only": boolean}
 Examples:
-- "ML internships in Bangladesh" → {"keyword":"machine learning intern","country":"Bangladesh","remote_only":false}
+- "ML internships in Dhaka open this month" → {"keyword":"machine learning intern","country":"Bangladesh","remote_only":false}
 - "remote frontend jobs" → {"keyword":"frontend developer","country":"United States","remote_only":true}
-- "data science jobs Dhaka" → {"keyword":"data science","country":"Bangladesh","remote_only":false}
-Query: "${query}"`
-      }],
-      temperature: 0,
-      max_tokens: 100,
+Query: "${query}"`,
     })
-    return JSON.parse(completion.choices[0].message.content ?? '{}')
+    const text = (response.text ?? '').replace(/```json|```/g, '').trim()
+    return JSON.parse(text)
   } catch {
     return { keyword: query, country: 'Bangladesh', remote_only: false }
+  }
+}
+
+// Generate CV-grounded reasoning for why a job matches (or doesn't)
+async function explainMatch(jobTitle: string, jobDesc: string, cvContext: string, fitScore: number) {
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: `Given this candidate's CV and a job, explain in ONE concise sentence (max 25 words) why this job is a ${fitScore}% match. Reference specific CV evidence. Be honest about gaps.
+
+CV: ${cvContext.slice(0, 1500)}
+
+Job: ${jobTitle}
+${jobDesc.slice(0, 400)}
+
+Reasoning (one sentence):`,
+    })
+    return (response.text ?? '').trim()
+  } catch {
+    return null
   }
 }
 
@@ -40,9 +55,9 @@ export async function POST(req: NextRequest) {
     // 1. Parse the natural language query
     const parsed = await parseQuery(query)
 
-    // 2. Get CV embedding for fit scoring
-    const cvChunks = await retrieveCV(userId, parsed.keyword, 5)
-    const cvSummary = cvChunks.map((c: any) => c.content).join(' ').slice(0, 1000)
+    // 2. Get CV context for fit scoring + reasoning
+    const cvChunks = await retrieveCV(userId, parsed.keyword, 6)
+    const cvSummary = cvChunks.map(c => c.content).join(' ').slice(0, 1500)
     const cvVector = cvSummary ? await embedText(cvSummary) : []
 
     // 3. Search jobs via Apify
@@ -59,51 +74,54 @@ export async function POST(req: NextRequest) {
         job_type:     'all',
         currency:     'USD',
       })
-
       const { items } = await apify.dataset(run.defaultDatasetId).listItems()
       rawJobs = items ?? []
     } catch (err) {
       console.error('[Jobs] Apify error:', err)
-      return NextResponse.json({
-        jobs: [],
-        parsed,
-        message: 'Job search failed. Check your Apify token.',
-      })
+      return NextResponse.json({ jobs: [], parsed, message: 'Job search failed. Check Apify token.' })
     }
 
     if (rawJobs.length === 0) {
       return NextResponse.json({ jobs: [], parsed, message: 'No jobs found. Try different keywords.' })
     }
 
-    // 4. Score each job against CV
+    // 4. Score + explain each job (top 8)
     const scored = await Promise.all(
       rawJobs.slice(0, 8).map(async (job: any) => {
-        let fitScore: number | null = null
+        const jobTitle = job.title ?? 'Untitled'
+        const jobDesc  = job.description ?? job.summary ?? ''
 
+        // Programmatic fit score via cosine similarity
+        let fitScore = 50
         if (cvVector.length > 0) {
-          const jobText = [job.title, job.description ?? job.summary ?? ''].join(' ').slice(0, 800)
-          const jdVec  = await embedText(jobText)
-          const raw    = cosineSimilarity(jdVec, cvVector)
-          fitScore     = Math.round(((raw + 1) / 2) * 100)
+          const jdVec = await embedText([jobTitle, jobDesc].join(' ').slice(0, 800))
+          const raw   = cosineSimilarity(jdVec, cvVector)
+          fitScore    = Math.round(((raw + 1) / 2) * 100)
         }
 
+        // CV-grounded reasoning
+        const reasoning = cvSummary
+          ? await explainMatch(jobTitle, jobDesc, cvSummary, fitScore)
+          : null
+
         return {
-          id:          job.id        ?? Math.random().toString(36).slice(2),
-          title:       job.title     ?? 'Untitled',
-          company:     job.company   ?? job.employer ?? 'Unknown',
-          location:    job.location  ?? parsed.country,
-          salary:      job.salary    ?? job.compensation ?? 'Not listed',
-          url:         job.url       ?? job.job_url ?? '#',
-          description: (job.description ?? job.summary ?? '').slice(0, 300),
-          postedAt:    job.date_posted ?? job.posted_at ?? null,
-          deadline:    null,
+          id:          job.id ?? Math.random().toString(36).slice(2),
+          title:       jobTitle,
+          company:     job.company ?? job.employer ?? job.company_name ?? 'Unknown',
+          location:    job.location ?? job.city ?? parsed.country,
+          salary:      job.salary ?? job.salary_range ?? job.compensation ?? 'Not listed',
+          deadline:    job.deadline ?? job.application_deadline ?? null,
+          url:         job.url ?? job.job_url ?? job.link ?? '#',
+          description: jobDesc.slice(0, 300),
+          postedAt:    job.date_posted ?? job.posted_at ?? job.posted_date ?? null,
           fitScore,
+          reasoning,
         }
       })
     )
 
     return NextResponse.json({
-      jobs: scored.sort((a, b) => (b.fitScore ?? 0) - (a.fitScore ?? 0)),
+      jobs: scored.sort((a, b) => b.fitScore - a.fitScore),
       parsed,
     })
 
