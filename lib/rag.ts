@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai'
 import { QdrantClient } from '@qdrant/js-client-rest'
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! })
-const COLLECTION_NAME = 'cv_chunks_local'
+const COLLECTION_NAME = 'cv_chunks_gemini'
 
 // Must match the dimension used when storing CV vectors
 const EMBED_DIM = 768

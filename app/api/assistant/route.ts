@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server'
 import { retrieveCV, buildCVContext } from '@/lib/rag'
 import { createClient } from '@supabase/supabase-js'
 import { GoogleGenAI } from '@google/genai'
+import Groq from 'groq-sdk'
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
+
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! })
 const supabase = createClient(
@@ -79,36 +82,39 @@ export async function POST(req: NextRequest) {
     let fullResponse = ''
 
     const stream = new ReadableStream({
-      async start(controller) {
-        try {
-          const response = await ai.models.generateContentStream({
-            model: 'gemini-2.0-flash',
-            contents: [
-              ...chatHistory,
-              { role: 'user', parts: [{ text: message }] }
-            ],
-            config: { systemInstruction: SYSTEM_PROMPT(cvContext) }
-          })
-
-          for await (const chunk of response) {
-            const text = chunk.text ?? ''
-            if (text) {
-              fullResponse += text
-              controller.enqueue(new TextEncoder().encode(text))
-            }
+    async start(controller) {
+      try {
+        const completion = await groq.chat.completions.create({
+          model: 'llama-3.3-70b-versatile',
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT(cvContext) },
+            ...sessionHistory.map((m: any) => ({
+              role: m.role as 'user' | 'assistant',
+              content: m.content,
+            })),
+            { role: 'user', content: message },
+          ],
+          stream: true,
+        })
+        for await (const chunk of completion) {
+          const text = chunk.choices[0]?.delta?.content ?? ''
+          if (text) {
+            fullResponse += text
+            controller.enqueue(new TextEncoder().encode(text))
           }
-        } catch (streamErr) {
-          console.error('[Assistant stream]', streamErr)
-          controller.enqueue(new TextEncoder().encode('Sorry, something went wrong generating a response.'))
-        } finally {
-          await supabase.from('chat_messages').insert([
-            { user_id: userId, role: 'user',      content: message },
-            { user_id: userId, role: 'assistant', content: fullResponse },
-          ])
-          controller.close()
         }
-      },
-    })
+      } catch (streamErr) {
+        console.error('[Assistant stream]', streamErr)
+        controller.enqueue(new TextEncoder().encode('Sorry, something went wrong.'))
+      } finally {
+        await supabase.from('chat_messages').insert([
+          { user_id: userId, role: 'user', content: message },
+          { user_id: userId, role: 'assistant', content: fullResponse },
+        ])
+        controller.close()
+      }
+    },
+  })
 
     return new Response(stream, {
       headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-cache' },
