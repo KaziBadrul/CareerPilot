@@ -1,3 +1,7 @@
+<img width="237" height="55" alt="image" src="https://github.com/user-attachments/assets/3ddf2f0e-4548-4c97-848d-1ee0ed340d92" />  
+<br/>
+<img width="227" height="46" alt="image" src="https://github.com/user-attachments/assets/6192d7d4-e7f2-4397-aa75-8383db271dbe" />
+
 # CareerPilot
 
 CareerPilot is a Next.js application that helps job seekers discover, track, and apply for jobs with AI-powered assistance. It integrates with Supabase for authentication and storage and provides a dashboard experience (job search, saved jobs, recent searches, AI assistant, and progress tracking).
@@ -11,6 +15,14 @@ Key features
 - Recent Searches: store and re-run previous searches.
 - AI Assistant: chat and generate cover letters (integrated UI components in the dashboard).
 - Authentication: signup / login via Supabase, profile persistence in a `users` table.
+
+## Previews
+<img width="1920" height="988" alt="image" src="https://github.com/user-attachments/assets/155a4ce7-c70b-4343-9f33-bd327cd919dd" /> <br/>
+<img width="1920" height="992" alt="image" src="https://github.com/user-attachments/assets/59ad4541-138f-4114-85dd-ddb2d010ca0a" /> <br/>
+<img width="1920" height="991" alt="image" src="https://github.com/user-attachments/assets/863e2fbb-beb2-479f-8fb7-554d0cefc21c" /> <br/>
+<img width="1920" height="992" alt="image" src="https://github.com/user-attachments/assets/240831fc-5cdf-4e1a-952d-9d53663d5be1" /> <br/>
+<img width="1920" height="992" alt="image" src="https://github.com/user-attachments/assets/daa3b7a7-2605-4d78-918d-e2674b0ff9aa" /> <br/>
+
 
 Repository layout
 
