@@ -13,13 +13,13 @@ const config: Config = {
         body:    ['DM Sans', 'sans-serif'],
       },
       colors: {
-        navy:    '#0a0f1e',
-        blue:    '#2563eb',
-        cream:   '#f5f3ee',
+        navy: '#0a0f1e',
+        blue: '#2563eb',
+        cream: '#f5f3ee',
       },
       animation: {
         'pulse-slow': 'pulse-slow 6s ease-in-out infinite',
-        'shimmer':    'shimmer 3s linear infinite',
+        'shimmer': 'shimmer 3s linear infinite',
       },
     },
   },
