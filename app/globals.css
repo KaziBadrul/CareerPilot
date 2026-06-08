@@ -4,7 +4,7 @@
    Theme: Light by default, with dark mode via [data-theme='dark']
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -13,58 +13,58 @@
 :root {
   color-scheme: light;
 
-  --navy: #f7f8fb;
-  --navy-2: #ffffff;
-  --navy-3: #eef2f8;
-  --navy-4: #d8e0ec;
-  --blue: #2563eb;
-  --blue-glow: #1d4ed8;
-  --blue-light: #2563eb;
-  --cream: #1f2937;
-  --cream-2: #334155;
-  --white: #0f172a;
-  --muted: #64748b;
-  --border: rgba(15, 23, 42, 0.10);
-  --border-2: rgba(15, 23, 42, 0.16);
-  --surface: rgba(255, 255, 255, 0.72);
-  --surface-2: rgba(255, 255, 255, 0.92);
-  --surface-hover: rgba(15, 23, 42, 0.045);
-  --field: rgba(255, 255, 255, 0.88);
-  --grid-line: rgba(15, 23, 42, 0.055);
-  --modal-bg: linear-gradient(180deg, #ffffff 0%, #f4f7fb 100%);
-  --overlay: rgba(15, 23, 42, 0.32);
-  --shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(15, 23, 42, 0.04);
-  --code-bg: rgba(15, 23, 42, 0.06);
+  --navy: #FFFEF0;
+  --navy-2: #FAFAF2;
+  --navy-3: #F0F0E6;
+  --navy-4: #E8E8E0;
+  --blue: #0047FF;
+  --blue-glow: #0047FF;
+  --blue-light: #0047FF;
+  --cream: #0A0A0A;
+  --cream-2: #333333;
+  --white: #0A0A0A;
+  --muted: #666666;
+  --border: #0A0A0A;
+  --border-2: #222222;
+  --surface: #FFFEF0;
+  --surface-2: #FFFEF0;
+  --surface-hover: #E8E8E0;
+  --field: #FFFEF0;
+  --grid-line: #E8E8E0;
+  --modal-bg: #FFFEF0;
+  --overlay: rgba(10, 10, 10, 0.5);
+  --shadow: 4px 4px 0px #0A0A0A;
+  --code-bg: #E8E8E0;
 
-  --font-display: 'Syne', sans-serif;
-  --font-body:    'DM Sans', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body:    'Space Grotesk', sans-serif;
 }
 
 [data-theme='dark'] {
   color-scheme: dark;
 
-  --navy: #0a0f1e;
-  --navy-2: #111827;
-  --navy-3: #1a2236;
-  --navy-4: #243048;
-  --blue: #2563eb;
-  --blue-glow: #3b82f6;
-  --blue-light: #60a5fa;
-  --cream: #f5f3ee;
-  --cream-2: #ede9e1;
-  --white: #ffffff;
-  --muted: #94a3b8;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-2: rgba(255, 255, 255, 0.14);
-  --surface: rgba(255, 255, 255, 0.02);
-  --surface-2: rgba(255, 255, 255, 0.03);
-  --surface-hover: rgba(255, 255, 255, 0.04);
-  --field: rgba(255, 255, 255, 0.04);
-  --grid-line: rgba(255, 255, 255, 0.02);
-  --modal-bg: linear-gradient(180deg, #131b2e 0%, #0d1424 100%);
-  --overlay: rgba(0, 0, 0, 0.6);
-  --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  --code-bg: rgba(255, 255, 255, 0.08);
+  --navy: #0A0A0A;
+  --navy-2: #111111;
+  --navy-3: #1A1A1A;
+  --navy-4: #222222;
+  --blue: #0047FF;
+  --blue-glow: #0047FF;
+  --blue-light: #C8FF00;
+  --cream: #FFFEF0;
+  --cream-2: #F0F0E6;
+  --white: #FFFEF0;
+  --muted: #888888;
+  --border: #333333;
+  --border-2: #444444;
+  --surface: #0A0A0A;
+  --surface-2: #111111;
+  --surface-hover: #1A1A1A;
+  --field: #111111;
+  --grid-line: #222222;
+  --modal-bg: #0A0A0A;
+  --overlay: rgba(0, 0, 0, 0.8);
+  --shadow: 4px 4px 0px #000000;
+  --code-bg: #222222;
 }
 
 *,

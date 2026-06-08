@@ -43,193 +43,72 @@ export function Hero() {
   }, [charIdx, isDeleting, phraseIdx])
 
   return (
-    <section style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '120px 24px 80px',
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
-
-      {/* Background orbs */}
-      <div style={{
-        position: 'absolute', top: '15%', left: '10%',
-        width: '500px', height: '500px',
-        background: 'radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 70%)',
-        borderRadius: '50%',
-        pointerEvents: 'none',
-        animation: 'pulse-slow 6s ease-in-out infinite',
-      }} />
-      <div style={{
-        position: 'absolute', bottom: '10%', right: '5%',
-        width: '400px', height: '400px',
-        background: 'radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)',
-        borderRadius: '50%',
-        pointerEvents: 'none',
-        animation: 'pulse-slow 8s ease-in-out infinite 2s',
-      }} />
+    <section className="min-h-screen flex flex-col items-center justify-center px-6 pt-[120px] pb-[80px] relative overflow-hidden bg-navy font-body">
 
       {/* Grid lines */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        backgroundImage: `
-          linear-gradient(var(--grid-line) 1px, transparent 1px),
-          linear-gradient(90deg, var(--grid-line) 1px, transparent 1px)
-        `,
-        backgroundSize: '60px 60px',
-        maskImage: 'radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 80%)',
-        WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 80%)',
-      }} />
+      <div 
+        className="absolute inset-0 z-0 opacity-20 pointer-events-none"
+        style={{
+          backgroundImage: `
+            linear-gradient(var(--border) 1px, transparent 1px),
+            linear-gradient(90deg, var(--border) 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px',
+        }} 
+      />
 
-      <div style={{ maxWidth: '860px', width: '100%', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+      <div className="max-w-[860px] w-full text-center relative z-10">
 
         {/* Badge */}
-        <div className="animate-fadeUp" style={{
-          display: 'inline-flex', alignItems: 'center', gap: '6px',
-          background: 'rgba(37,99,235,0.12)',
-          border: '1px solid rgba(37,99,235,0.3)',
-          borderRadius: '100px',
-          padding: '5px 14px',
-          marginBottom: '28px',
-          fontSize: '12px',
-          fontWeight: 500,
-          color: 'var(--blue-light)',
-          letterSpacing: '0.04em',
-        }}>
-          <Sparkles size={12} />
+        <div className="animate-fadeUp inline-flex items-center gap-2 bg-green text-black border-[3px] border-black px-4 py-1.5 mb-8 text-xs font-black tracking-widest uppercase shadow-[2px_2px_0px_#0A0A0A]">
+          <Sparkles size={14} strokeWidth={3} />
           POWERED BY AI AGENTS
         </div>
 
         {/* Headline */}
-        <h1 className="animate-fadeUp delay-100" style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: 'clamp(2.4rem, 6vw, 4.2rem)',
-          fontWeight: 800,
-          lineHeight: 1.1,
-          letterSpacing: '-0.03em',
-          margin: '0 0 20px',
-          color: 'var(--white)',
-        }}>
+        <h1 className="animate-fadeUp delay-100 font-display text-[clamp(2.4rem,6vw,4.2rem)] font-black leading-[1.1] tracking-tight mb-6 text-white uppercase">
           The AI that{' '}
-          <span className="shimmer-text">hunts your next job</span>
+          <span className="text-blue underline decoration-[6px] underline-offset-4">hunts your next job</span>
           <br />
           while you sleep
         </h1>
 
         {/* Subhead */}
-        <p className="animate-fadeUp delay-200" style={{
-          fontSize: 'clamp(1rem, 2vw, 1.15rem)',
-          color: 'var(--muted)',
-          fontWeight: 300,
-          lineHeight: 1.7,
-          maxWidth: '600px',
-          margin: '0 auto 40px',
-        }}>
+        <p className="animate-fadeUp delay-200 text-[clamp(1rem,2vw,1.15rem)] text-muted font-medium leading-[1.7] max-w-[600px] mx-auto mb-10">
           Upload your CV once. CareerPilot scores your fit, finds live jobs,
           drafts cover letters, and builds your learning roadmap — all grounded in your actual experience.
         </p>
 
         {/* CTA buttons */}
-        <div className="animate-fadeUp delay-300" style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '12px',
-          marginBottom: '56px',
-        }}>
-          <Link href="/signup" style={{
-            display: 'inline-flex', alignItems: 'center', gap: '8px',
-            background: 'var(--blue)',
-            color: '#fff',
-            textDecoration: 'none',
-            fontSize: '15px',
-            fontWeight: 500,
-            padding: '13px 28px',
-            borderRadius: '10px',
-            transition: 'all 0.2s',
-            boxShadow: '0 0 0 0 rgba(37,99,235,0)',
-          }}
-            onMouseEnter={e => {
-              const el = e.currentTarget as HTMLElement
-              el.style.background = 'var(--blue-glow)'
-              el.style.boxShadow = '0 0 24px rgba(37,99,235,0.4)'
-              el.style.transform = 'translateY(-1px)'
-            }}
-            onMouseLeave={e => {
-              const el = e.currentTarget as HTMLElement
-              el.style.background = 'var(--blue)'
-              el.style.boxShadow = '0 0 0 0 rgba(37,99,235,0)'
-              el.style.transform = 'translateY(0)'
-            }}
+        <div className="animate-fadeUp delay-300 flex flex-wrap items-center justify-center gap-4 mb-14">
+          <Link href="/signup" 
+            className="inline-flex items-center gap-2 bg-blue text-cream border-[3px] border-black text-[15px] font-black uppercase px-8 py-3.5 shadow-[4px_4px_0px_#0A0A0A] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#0A0A0A] transition-all tracking-widest"
           >
             Start for free
-            <ArrowRight size={15} />
+            <ArrowRight size={18} strokeWidth={3} />
           </Link>
-          <a href="#features" style={{
-            display: 'inline-flex', alignItems: 'center', gap: '8px',
-            border: '1px solid var(--border-2)',
-            color: 'var(--cream)',
-            textDecoration: 'none',
-            fontSize: '15px',
-            fontWeight: 400,
-            padding: '13px 28px',
-            borderRadius: '10px',
-            transition: 'all 0.2s',
-          }}
-            onMouseEnter={e => {
-              const el = e.currentTarget as HTMLElement
-              el.style.borderColor = 'var(--border-2)'
-              el.style.background = 'var(--surface-hover)'
-            }}
-            onMouseLeave={e => {
-              const el = e.currentTarget as HTMLElement
-              el.style.borderColor = 'var(--border-2)'
-              el.style.background = 'transparent'
-            }}
+          <a href="#features" 
+            className="inline-flex items-center gap-2 bg-white text-black border-[3px] border-black text-[15px] font-black uppercase px-8 py-3.5 shadow-[4px_4px_0px_#0A0A0A] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#0A0A0A] transition-all tracking-widest"
           >
             See how it works
           </a>
         </div>
 
         {/* Typing demo box */}
-        <div className="animate-fadeUp delay-400" style={{
-          background: 'var(--surface-2)',
-          border: '1px solid var(--border-2)',
-          borderRadius: '14px',
-          padding: '18px 24px',
-          maxWidth: '580px',
-          margin: '0 auto',
-          textAlign: 'left',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
-            {['#ef4444','#f59e0b','#22c55e'].map(c => (
-              <div key={c} style={{ width: '10px', height: '10px', borderRadius: '50%', background: c, opacity: 0.7 }} />
-            ))}
-            <span style={{ marginLeft: '8px', fontSize: '11px', color: 'var(--muted)', fontFamily: 'monospace' }}>
+        <div className="animate-fadeUp delay-400 bg-surface border-[3px] border-black p-5 max-w-[580px] mx-auto text-left shadow-[8px_8px_0px_#0A0A0A]">
+          <div className="flex items-center gap-2 mb-4 border-b-[3px] border-black pb-3">
+            <div className="w-3 h-3 bg-black" />
+            <div className="w-3 h-3 bg-black" />
+            <div className="w-3 h-3 bg-black" />
+            <span className="ml-2 text-xs text-muted font-mono font-bold uppercase tracking-widest">
               careerpilot — assistant
             </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-            <div style={{
-              width: '26px', height: '26px', borderRadius: '6px',
-              background: 'rgba(37,99,235,0.2)', border: '1px solid rgba(37,99,235,0.3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0, marginTop: '2px',
-            }}>
-              <Sparkles size={12} color="var(--blue-light)" />
+          <div className="flex items-start gap-3">
+            <div className="w-[28px] h-[28px] bg-green border-[2px] border-black flex items-center justify-center shrink-0 mt-0.5">
+              <Sparkles size={14} color="#0A0A0A" strokeWidth={3} />
             </div>
-            <p style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '14px',
-              color: 'var(--cream)',
-              margin: 0,
-              lineHeight: 1.6,
-              minHeight: '22px',
-            }}>
+            <p className="font-mono text-[14px] text-cream font-bold m-0 leading-[1.6] min-h-[22px]">
               {displayed}
               <span className="cursor-blink" />
             </p>
@@ -237,12 +116,7 @@ export function Hero() {
         </div>
 
         {/* Social proof */}
-        <p className="animate-fadeUp delay-500" style={{
-          marginTop: '28px',
-          fontSize: '12px',
-          color: 'var(--muted)',
-          letterSpacing: '0.03em',
-        }}>
+        <p className="animate-fadeUp delay-500 mt-8 text-xs text-muted font-bold tracking-widest uppercase">
           Built for the Codesprint 2026 hackathon · Powered by Poridhi.io
         </p>
 
