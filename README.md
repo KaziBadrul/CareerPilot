@@ -16,6 +16,49 @@ Key features
 - AI Assistant: chat and generate cover letters (integrated UI components in the dashboard).
 - Authentication: signup / login via Supabase, profile persistence in a `users` table.
 
+## Architecture
+
+The diagram below shows the main data flow from CV upload through job search and the streamed agent response:
+
+```mermaid
+flowchart LR
+  U[User] --> UI[Dashboard UI]
+
+  subgraph CV[CV upload and indexing]
+    UI --> UP[POST /api/cv/upload]
+    UP --> ST[Supabase Storage documents bucket]
+    UP --> DB1[(Supabase cv_documents)]
+    UP --> QD[(Qdrant cv_chunks_gemini)]
+    UP --> US[(Supabase users)]
+  end
+
+  subgraph SEARCH[Job search and history]
+    UI --> JS[Job Search page]
+    JS --> JP[POST /api/jobs/search]
+    JP --> PR[Gemini query parser]
+    JP --> RCV[retrieveCV from Qdrant]
+    JP --> AP[Apify job listings]
+    JP --> SC[Fit scoring + CV grounded reasoning]
+    JP --> SH[POST /api/jobs/search-history]
+    SH --> DB2[(Supabase job_searches)]
+    SC --> UI
+  end
+
+  subgraph AGENT[Agent response]
+    UI --> CB[Cover letter / assistant action]
+    CB --> AA[POST /api/assistant]
+    AA --> RCV2[retrieveCV from Qdrant]
+    AA --> CH[(Supabase chat_messages)]
+    AA --> GM[Gemini response stream]
+    GM --> UI
+  end
+
+  US -. user_id sync .-> DB1
+  DB1 -. indexed CV content .-> JP
+  DB2 -. recent searches .-> UI
+  CH -. conversation history .-> AA
+```
+
 ## Previews
 <img width="1920" height="989" alt="image" src="https://github.com/user-attachments/assets/c38b6f53-149f-4534-8799-282a74c28514" />
  <br/>

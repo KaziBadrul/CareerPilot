@@ -12,6 +12,7 @@ import {
   Zap,
   Bell,
   ChevronRight,
+  Calendar,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -139,6 +140,14 @@ const navItems = [
     icon: TrendingUp,
     accent: "#FF5500",
     textDark: false,
+  },
+  {
+    id: "goals",
+    href: "/dashboard/goals",
+    label: "Goals",
+    icon: Calendar,
+    accent: "#C8FF00",
+    textDark: true,
   },
   {
     id: "settings",
