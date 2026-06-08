@@ -66,7 +66,6 @@ export function JobSearchPage({
       setParsed(data.parsed ?? null);
       if (data.message) setError(data.message);
 
-      // Save search to history
       try {
         await fetch("/api/jobs/search-history", {
           method: "POST",
@@ -99,7 +98,6 @@ export function JobSearchPage({
     void search(q);
   }, [initialQuery, search]);
 
-  // Derive unique locations from fetched jobs
   const locationOptions = useMemo(() => {
     const locs = jobs
       .map((j) => j.location)
@@ -107,92 +105,59 @@ export function JobSearchPage({
     return Array.from(new Set(locs)).sort();
   }, [jobs]);
 
-  // Apply location filter
   const displayedJobs = useMemo(() => {
     if (!locationFilter) return jobs;
     return jobs.filter((j) => j.location === locationFilter);
   }, [jobs, locationFilter]);
 
   return (
-    <div style={{ maxWidth: "740px", margin: "0 auto", padding: "32px 24px" }}>
-      <div style={{ marginBottom: "24px" }}>
-        <h1
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "20px",
-            fontWeight: 600,
-            color: "var(--white)",
-            margin: "0 0 4px",
-          }}
-        >
-          Job hunter
-        </h1>
-        <p style={{ color: "var(--muted)", fontSize: "13.5px", margin: 0 }}>
-          Search in plain English — each result is scored and explained against
-          your CV
+    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "40px 24px", background: "#FFFEF0", fontFamily: "'Space Grotesk', sans-serif", color: "#0A0A0A" }}>
+      <div style={{ marginBottom: "32px", border: "3px solid #0A0A0A", padding: "24px", boxShadow: "5px 5px 0px #0A0A0A", background: "transparent" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
+          <div style={{ width: "6px", height: "24px", background: "#C8FF00", border: "2px solid #0A0A0A" }} />
+          <h1 style={{ fontSize: "22px", fontWeight: 900, margin: 0, textTransform: "uppercase", letterSpacing: "-0.01em" }}>
+            Job Hunter
+          </h1>
+        </div>
+        <p style={{ color: "#555", fontSize: "14px", margin: 0, fontWeight: 500, lineHeight: 1.5 }}>
+          Search in plain English — each result is scored and explained against your index vault profile.
         </p>
       </div>
 
       {!hasCV && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "flex-start",
-            gap: "10px",
-            background: "rgba(245,158,11,0.08)",
-            border: "1px solid rgba(245,158,11,0.2)",
-            borderRadius: "10px",
-            padding: "12px 16px",
-            fontSize: "13px",
-            color: "#fbbf24",
-            marginBottom: "20px",
-          }}
-        >
-          <AlertCircle size={14} style={{ flexShrink: 0, marginTop: "1px" }} />
-          Upload your CV first so we can score and explain each job against your
-          profile.
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", background: "#FF5500", border: "3px solid #0A0A0A", padding: "16px 20px", fontSize: "13px", color: "#FFFEF0", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.02em", marginBottom: "24px", boxShadow: "4px 4px 0px #0A0A0A" }}>
+          <AlertCircle size={16} style={{ flexShrink: 0 }} />
+          <span>Upload your CV first so we can score and explain each job opening against your profile.</span>
         </div>
       )}
 
-      <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
+      <div style={{ display: "flex", gap: "16px", marginBottom: "24px", alignItems: "center" }}>
         <div style={{ position: "relative", flex: 1 }}>
-          <Search
-            size={14}
-            color="var(--muted)"
-            style={{
-              position: "absolute",
-              left: "12px",
-              top: "50%",
-              transform: "translateY(-50%)",
-            }}
-          />
+          <Search size={16} color="#0A0A0A" style={{ position: "absolute", left: "16px", top: "50%", transform: "translateY(-50%)", zIndex: 2 }} />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && search()}
-            placeholder='"ML internships in Dhaka open this month"'
+            placeholder='e.g., "ML internships open this month"'
             style={{
               width: "100%",
-              paddingLeft: "36px",
-              paddingRight: "14px",
-              paddingTop: "10px",
-              paddingBottom: "10px",
-              background: "var(--field)",
-              border: "1px solid var(--border-2)",
-              borderRadius: "10px",
-              color: "var(--cream)",
-              fontSize: "13.5px",
+              paddingLeft: "44px",
+              paddingRight: "16px",
+              paddingTop: "14px",
+              paddingBottom: "14px",
+              background: "transparent",
+              border: "3px solid #0A0A0A",
+              color: "#0A0A0A",
+              fontSize: "14px",
+              fontWeight: 600,
               outline: "none",
-              fontFamily: "var(--font-body)",
+              fontFamily: "'Space Grotesk', sans-serif",
               boxSizing: "border-box",
+              boxShadow: "inset 2px 2px 0px rgba(0,0,0,0.05)",
             }}
-            onFocus={(e) =>
-              (e.currentTarget.style.borderColor = "rgba(37,99,235,0.5)")
-            }
-            onBlur={(e) =>
-              (e.currentTarget.style.borderColor = "var(--border-2)")
-            }
+            onFocus={(e) => (e.currentTarget.style.background = "rgba(200,255,0,0.02)")}
+            onBlur={(e) => (e.currentTarget.style.background = "transparent")}
           />
         </div>
         <button
@@ -201,68 +166,52 @@ export function JobSearchPage({
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "6px",
-            padding: "10px 18px",
-            background:
-              query.trim() && !loading ? "var(--blue)" : "rgba(37,99,235,0.3)",
-            color: "#fff",
-            border: "none",
-            borderRadius: "10px",
-            fontSize: "13.5px",
-            fontWeight: 500,
+            gap: "8px",
+            padding: "14px 24px",
+            background: query.trim() && !loading ? "#C8FF00" : "#EAE9E0",
+            color: "#0A0A0A",
+            border: "3px solid #0A0A0A",
+            fontSize: "14px",
+            fontWeight: 800,
+            textTransform: "uppercase",
             cursor: query.trim() && !loading ? "pointer" : "not-allowed",
-            fontFamily: "var(--font-body)",
+            fontFamily: "'Space Grotesk', sans-serif",
             flexShrink: 0,
+            boxShadow: query.trim() && !loading ? "3px 3px 0px #0A0A0A" : "none",
+            transition: "all 0.1s",
           }}
+          onMouseEnter={(e) => { if (query.trim() && !loading) { e.currentTarget.style.transform = "translate(-1px,-1px)"; e.currentTarget.style.boxShadow = "4px 4px 0px #0A0A0A"; } }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = query.trim() && !loading ? "3px 3px 0px #0A0A0A" : "none"; }}
         >
-          {loading ? (
-            <Loader2 size={14} className="animate-spin" />
-          ) : (
-            <Sparkles size={14} />
-          )}
-          Search
+          {loading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+          <span>Search</span>
         </button>
       </div>
 
       {!searched && (
-        <div style={{ marginBottom: "24px" }}>
-          <p
-            style={{
-              fontSize: "11px",
-              color: "var(--muted)",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              marginBottom: "8px",
-              fontWeight: 500,
-            }}
-          >
-            Try these
+        <div style={{ marginBottom: "32px" }}>
+          <p style={{ fontSize: "11px", color: "#666", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "12px", fontWeight: 800 }}>
+            QUICK ACTIONS & EXAMPLES
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
             {EXAMPLES.map((q) => (
               <button
                 key={q}
                 onClick={() => search(q)}
                 style={{
-                  fontSize: "12px",
-                  color: "var(--muted)",
-                  background: "var(--field)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "100px",
-                  padding: "5px 12px",
+                  fontSize: "13px",
+                  color: "#0A0A0A",
+                  background: "transparent",
+                  border: "2px solid #0A0A0A",
+                  padding: "6px 14px",
+                  fontWeight: 700,
                   cursor: "pointer",
-                  fontFamily: "var(--font-body)",
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  boxShadow: "2px 2px 0px #0A0A0A",
+                  transition: "all 0.1s",
                 }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor =
-                    "rgba(37,99,235,0.4)";
-                  (e.currentTarget as HTMLElement).style.color = "var(--cream)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor =
-                    "var(--border)";
-                  (e.currentTarget as HTMLElement).style.color = "var(--muted)";
-                }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = "translate(-1px,-1px)"; e.currentTarget.style.boxShadow = "3px 3px 0px #0A0A0A"; e.currentTarget.style.background = "rgba(0,71,255,0.05)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "2px 2px 0px #0A0A0A"; e.currentTarget.style.background = "transparent"; }}
               >
                 {q}
               </button>
@@ -271,261 +220,55 @@ export function JobSearchPage({
         </div>
       )}
 
-      {loading && (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "12px",
-            padding: "32px 0",
-          }}
-        >
-          {/* Animated header skeleton */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-              marginBottom: "16px",
-              padding: "0 16px",
-            }}
-          >
-            <div
-              style={{
-                height: "20px",
-                background:
-                  "linear-gradient(90deg, var(--field) 0%, var(--surface) 50%, var(--field) 100%)",
-                backgroundSize: "200% 100%",
-                borderRadius: "6px",
-                animation: "shimmer 2s infinite",
-                width: "40%",
-              }}
-            />
-            <div
-              style={{
-                height: "14px",
-                background:
-                  "linear-gradient(90deg, var(--field) 0%, var(--surface) 50%, var(--field) 100%)",
-                backgroundSize: "200% 100%",
-                borderRadius: "6px",
-                animation: "shimmer 2s infinite 0.1s both",
-                width: "60%",
-              }}
-            />
-          </div>
-
-          {/* Animated job card skeletons */}
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              style={{
-                background:
-                  "linear-gradient(90deg, var(--surface) 0%, var(--surface-hover) 50%, var(--surface) 100%)",
-                backgroundSize: "200% 100%",
-                border: "1px solid var(--border)",
-                borderRadius: "12px",
-                padding: "16px",
-                animation: `shimmer 2s infinite ${i * 0.15}s`,
-              }}
-            >
-              {/* Logo */}
-              <div
-                style={{
-                  width: "38px",
-                  height: "38px",
-                  background: "var(--field)",
-                  borderRadius: "8px",
-                  marginBottom: "12px",
-                }}
-              />
-              {/* Title */}
-              <div
-                style={{
-                  height: "16px",
-                  background: "var(--field)",
-                  borderRadius: "6px",
-                  marginBottom: "8px",
-                  width: "70%",
-                }}
-              />
-              {/* Company */}
-              <div
-                style={{
-                  height: "12px",
-                  background: "var(--field)",
-                  borderRadius: "4px",
-                  marginBottom: "12px",
-                  width: "40%",
-                }}
-              />
-              {/* Meta */}
-              <div
-                style={{
-                  display: "flex",
-                  gap: "12px",
-                  marginTop: "12px",
-                }}
-              >
-                <div
-                  style={{
-                    height: "10px",
-                    background: "var(--field)",
-                    borderRadius: "4px",
-                    flex: 1,
-                  }}
-                />
-                <div
-                  style={{
-                    height: "10px",
-                    background: "var(--field)",
-                    borderRadius: "4px",
-                    width: "100px",
-                  }}
-                />
-              </div>
-            </div>
-          ))}
-
-          {/* Loading text */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "10px",
-              marginTop: "16px",
-              color: "var(--muted)",
-            }}
-          >
-            <Loader2 size={16} className="animate-spin" />
-            <p style={{ fontSize: "13px", margin: 0 }}>
-              Searching, scoring, and explaining matches…
-            </p>
-          </div>
-        </div>
-      )}
-
-      {error && !loading && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            fontSize: "13px",
-            color: "var(--muted)",
-            background: "var(--surface)",
-            border: "1px solid var(--border)",
-            borderRadius: "10px",
-            padding: "12px 16px",
-          }}
-        >
-          <Briefcase size={14} />
-          {error}
-        </div>
-      )}
-
-      {!loading && jobs.length > 0 && (
+      {searched && (
         <>
-          {/* Results header + location filter */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: "10px",
-              marginBottom: "12px",
-            }}
-          >
-            <p style={{ fontSize: "13px", color: "var(--muted)", margin: 0 }}>
-              <span style={{ color: "var(--cream)", fontWeight: 500 }}>
-                {displayedJobs.length}
-                {locationFilter ? ` of ${jobs.length}` : ""} jobs
-              </span>
-              {parsed && (
-                <>
-                  {" "}
-                  for &ldquo;{parsed.keyword}&rdquo;
-                  {parsed.country ? ` in ${parsed.country}` : ""}
-                </>
-              )}
-            </p>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "between", gap: "16px", marginBottom: "24px", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <div style={{ width: "4px", height: "14px", background: "#0047FF", border: "1px solid #0A0A0A" }} />
+              <p style={{ fontSize: "12px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>
+                {displayedJobs.length} {displayedJobs.length === 1 ? "match" : "matches"} found
+              </p>
+            </div>
 
-            {/* Location filter */}
-            {locationOptions.length > 1 && (
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "6px" }}
-              >
-                <MapPin size={12} color="var(--muted)" />
-                <div style={{ position: "relative" }}>
-                  <select
-                    value={locationFilter}
-                    onChange={(e) => setLocationFilter(e.target.value)}
-                    style={{
-                      appearance: "none",
-                      background: "var(--field)",
-                      border: "1px solid var(--border-2)",
-                      borderRadius: "8px",
-                      color: locationFilter ? "var(--cream)" : "var(--muted)",
-                      fontSize: "12px",
-                      fontFamily: "var(--font-body)",
-                      padding: "5px 28px 5px 10px",
-                      cursor: "pointer",
-                      outline: "none",
-                    }}
-                  >
-                    <option value="">All locations</option>
-                    {locationOptions.map((loc) => (
-                      <option key={loc} value={loc}>
-                        {loc}
-                      </option>
-                    ))}
-                  </select>
-                  {/* Caret */}
-                  <span
-                    style={{
-                      position: "absolute",
-                      right: "8px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      pointerEvents: "none",
-                      color: "var(--muted)",
-                      fontSize: "10px",
-                    }}
-                  >
-                    ▾
-                  </span>
-                </div>
-                {locationFilter && (
-                  <button
-                    onClick={() => setLocationFilter("")}
-                    title="Clear filter"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      color: "var(--muted)",
-                      padding: "2px",
-                    }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.color = "var(--cream)")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.color = "var(--muted)")
-                    }
-                  >
-                    <X size={13} />
-                  </button>
-                )}
+            {locationOptions.length > 0 && (
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginLeft: "auto" }}>
+                <MapPin size={14} color="#0A0A0A" />
+                <select
+                  value={locationFilter}
+                  onChange={(e) => setLocationFilter(e.target.value)}
+                  style={{
+                    padding: "6px 12px",
+                    background: "transparent",
+                    border: "2px solid #0A0A0A",
+                    color: "#0A0A0A",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    outline: "none",
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                    boxShadow: "2px 2px 0px #0A0A0A",
+                  }}
+                >
+                  <option value="">ALL LOCATIONS</option>
+                  {locationOptions.map((loc) => (
+                    <option key={loc} value={loc}>
+                      {loc.toUpperCase()}
+                    </option>
+                  ))}
+                </select>
               </div>
             )}
           </div>
 
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-          >
+          {error && (
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "14px 18px", border: "2px solid #0A0A0A", background: "rgba(200,255,0,0.1)", marginBottom: "20px", fontSize: "13px", fontWeight: 600 }}>
+              <AlertCircle size={16} color="#0A0A0A" style={{ flexShrink: 0 }} />
+              <p style={{ margin: 0, color: "#0A0A0A" }}>{error}</p>
+            </div>
+          )}
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             {displayedJobs.length > 0 ? (
               displayedJobs.map((job) => (
                 <JobCard
@@ -536,15 +279,8 @@ export function JobSearchPage({
                 />
               ))
             ) : (
-              <div
-                style={{
-                  textAlign: "center",
-                  padding: "32px 0",
-                  color: "var(--muted)",
-                  fontSize: "13px",
-                }}
-              >
-                No jobs match the selected location.
+              <div style={{ textAlign: "center", padding: "40px", border: "3px dashed #0A0A0A", color: "#0A0A0A", fontSize: "14px", fontWeight: 700, textTransform: "uppercase" }}>
+                No active openings match the selected location scope.
               </div>
             )}
           </div>
@@ -552,31 +288,17 @@ export function JobSearchPage({
       )}
 
       {!loading && searched && jobs.length === 0 && !error && (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "48px 0",
-            color: "var(--muted)",
-          }}
-        >
-          <Briefcase size={24} style={{ opacity: 0.3, marginBottom: "10px" }} />
-          <p style={{ fontSize: "13px", margin: 0 }}>
-            No jobs found. Try broader keywords.
+        <div style={{ textAlign: "center", padding: "48px 24px", border: "3px dashed #0A0A0A", color: "#0A0A0A" }}>
+          <Briefcase size={28} style={{ marginBottom: "12px", margin: "0 auto 12px" }} />
+          <p style={{ fontSize: "14px", margin: 0, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.02em" }}>
+            No indexed jobs discovered. Try broader fallback parameters.
           </p>
         </div>
       )}
 
-      {/* Job detail modal */}
       {selectedJob && (
         <JobModal job={selectedJob} onClose={() => setSelectedJob(null)} />
       )}
-
-      <style>{`
-        @keyframes shimmer {
-          0% { background-position: 200% 0 }
-          100% { background-position: -200% 0 }
-        }
-      `}</style>
     </div>
   );
 }

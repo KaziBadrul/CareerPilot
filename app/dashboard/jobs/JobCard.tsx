@@ -18,22 +18,19 @@ import type { Job } from "./types";
 function fitColor(s: number) {
   if (s >= 75)
     return {
-      bg: "rgba(5,150,105,0.12)",
-      text: "#34d399",
-      ring: "rgba(5,150,105,0.3)",
+      bg: "#C8FF00",
+      text: "#0A0A0A",
       label: "Strong fit",
     };
   if (s >= 50)
     return {
-      bg: "rgba(245,158,11,0.12)",
-      text: "#fbbf24",
-      ring: "rgba(245,158,11,0.3)",
+      bg: "#0047FF",
+      text: "#FFFEF0",
       label: "Partial fit",
     };
   return {
-    bg: "rgba(239,68,68,0.12)",
-    text: "#f87171",
-    ring: "rgba(239,68,68,0.3)",
+    bg: "#FF5500",
+    text: "#FFFEF0",
     label: "Low fit",
   };
 }
@@ -117,61 +114,54 @@ export function JobCard({
   const btn: React.CSSProperties = {
     display: "flex",
     alignItems: "center",
-    gap: "5px",
-    fontSize: "12px",
-    padding: "6px 11px",
-    borderRadius: "7px",
-    border: "1px solid var(--border-2)",
+    gap: "6px",
+    fontSize: "11px",
+    padding: "6px 12px",
+    border: "2px solid #0A0A0A",
     cursor: "pointer",
-    fontFamily: "var(--font-body)",
-    background: "var(--field)",
-    color: "var(--muted)",
+    fontFamily: "'Space Grotesk', sans-serif",
+    textTransform: "uppercase",
+    fontWeight: 800,
+    background: "transparent",
+    color: "#0A0A0A",
+    boxShadow: "2px 2px 0px #0A0A0A",
+    transition: "all 0.1s",
   };
 
   return (
     <div
       style={{
-        background: "var(--surface)",
-        border: "1px solid var(--border)",
-        borderRadius: "12px",
+        background: "transparent",
+        border: "3px solid #0A0A0A",
         overflow: "hidden",
         cursor: "pointer",
-        transition: "border-color 0.2s, background 0.2s",
+        boxShadow: "4px 4px 0px #0A0A0A",
+        transition: "all 0.1s",
       }}
       onClick={onSelect}
       onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = "rgba(37,99,235,0.3)";
-        e.currentTarget.style.background = "var(--surface-hover)";
+        e.currentTarget.style.transform = "translate(-2px, -2px)";
+        e.currentTarget.style.boxShadow = "6px 6px 0px #0A0A0A";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "var(--border)";
-        e.currentTarget.style.background = "var(--surface)";
+        e.currentTarget.style.transform = "none";
+        e.currentTarget.style.boxShadow = "4px 4px 0px #0A0A0A";
       }}
     >
-      <div style={{ padding: "16px" }}>
-        {/* Header row */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            gap: "12px",
-          }}
-        >
-          <div style={{ display: "flex", gap: "12px", flex: 1, minWidth: 0 }}>
-            {/* Company logo */}
+      <div style={{ padding: "20px" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "14px" }}>
+          <div style={{ display: "flex", gap: "14px", flex: 1, minWidth: 0 }}>
             {job.company_logo ? (
               <img
                 src={job.company_logo}
                 alt={job.company}
                 style={{
-                  width: "38px",
-                  height: "38px",
-                  borderRadius: "8px",
+                  width: "44px",
+                  height: "44px",
+                  border: "2px solid #0A0A0A",
                   flexShrink: 0,
                   objectFit: "cover",
-                  background: "var(--field)",
-                  border: "1px solid var(--border)",
+                  background: "#FFFEF0",
                 }}
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = "none";
@@ -180,198 +170,73 @@ export function JobCard({
             ) : (
               <div
                 style={{
-                  width: "38px",
-                  height: "38px",
-                  borderRadius: "8px",
+                  width: "44px",
+                  height: "44px",
+                  border: "2px solid #0A0A0A",
                   flexShrink: 0,
-                  background: "rgba(37,99,235,0.08)",
-                  border: "1px solid var(--border)",
+                  background: "#0047FF",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <Building2 size={16} color="var(--blue-light)" />
+                <Building2 size={18} color="#FFFEF0" />
               </div>
             )}
             <div style={{ minWidth: 0 }}>
-              <h3
-                style={{
-                  fontFamily: "var(--font-display)",
-                  fontSize: "15px",
-                  fontWeight: 600,
-                  color: "var(--white)",
-                  margin: "0 0 3px",
-                }}
-              >
+              <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "16px", fontWeight: 900, color: "#0A0A0A", margin: "0 0 4px", textTransform: "uppercase" }}>
                 {job.title}
               </h3>
-              <p style={{ fontSize: "13px", color: "var(--muted)", margin: 0 }}>
+              <p style={{ fontSize: "13px", color: "#555", margin: 0, fontWeight: 700 }}>
                 {job.company}
               </p>
             </div>
           </div>
-          {/* Fit score badge */}
+
           <div
             style={{
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               background: c.bg,
-              border: `1px solid ${c.ring}`,
-              borderRadius: "10px",
+              border: "2px solid #0A0A0A",
               padding: "6px 12px",
               flexShrink: 0,
+              boxShadow: "2px 2px 0px #0A0A0A",
             }}
           >
-            <span
-              style={{
-                fontSize: "18px",
-                fontWeight: 700,
-                color: c.text,
-                fontFamily: "var(--font-display)",
-                lineHeight: 1,
-              }}
-            >
+            <span style={{ fontSize: "18px", fontWeight: 900, color: c.text, lineHeight: 1 }}>
               {job.fitScore}%
             </span>
-            <span
-              style={{
-                fontSize: "9.5px",
-                color: c.text,
-                opacity: 0.8,
-                marginTop: "2px",
-              }}
-            >
+            <span style={{ fontSize: "10px", fontWeight: 800, textTransform: "uppercase", color: c.text, marginTop: "2px", letterSpacing: "0.02em" }}>
               {c.label}
             </span>
           </div>
         </div>
 
-        {/* Structured meta fields */}
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "14px",
-            marginTop: "12px",
-          }}
-        >
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", margin: "16px 0", fontSize: "12px", color: "#0A0A0A", fontWeight: 600 }}>
           {job.location && (
-            <span
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-                fontSize: "11.5px",
-                color: "var(--muted)",
-              }}
-            >
-              <MapPin size={11} />
-              {job.location}
-            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <MapPin size={14} color="#0A0A0A" />
+              <span style={{ textTransform: "uppercase" }}>{job.location}</span>
+            </div>
           )}
           {job.salary && job.salary !== "Not listed" && (
-            <span
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-                fontSize: "11.5px",
-                color: "var(--muted)",
-              }}
-            >
-              <DollarSign size={11} />
-              {job.salary}
-            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <DollarSign size={14} color="#0A0A0A" />
+              <span>{job.salary}</span>
+            </div>
           )}
-          {job.job_type && (
-            <span
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-                fontSize: "11.5px",
-                color: "var(--muted)",
-              }}
-            >
-              • {job.job_type}
-            </span>
-          )}
-          {job.is_remote && (
-            <span
-              style={{
-                fontSize: "10px",
-                background: "rgba(52,211,153,0.1)",
-                color: "#34d399",
-                padding: "1px 6px",
-                borderRadius: "4px",
-                fontWeight: 600,
-              }}
-            >
-              REMOTE
-            </span>
-          )}
-          {job.deadline && (
-            <span
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-                fontSize: "11.5px",
-                color: "#fbbf24",
-              }}
-            >
-              <Calendar size={11} />
-              Deadline: {job.deadline}
-            </span>
+          {job.posted_date && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <Calendar size={14} color="#0A0A0A" />
+              <span>{new Date(job.posted_date).toLocaleDateString()}</span>
+            </div>
           )}
         </div>
 
-        {/* CV-grounded reasoning */}
-        {job.reasoning && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-start",
-              gap: "8px",
-              marginTop: "12px",
-              padding: "10px 12px",
-              background: "rgba(37,99,235,0.06)",
-              border: "1px solid rgba(37,99,235,0.15)",
-              borderRadius: "8px",
-            }}
-          >
-            <Sparkles
-              size={13}
-              color="var(--blue-light)"
-              style={{ flexShrink: 0, marginTop: "1px" }}
-            />
-            <p
-              style={{
-                fontSize: "12px",
-                color: "var(--cream)",
-                margin: 0,
-                lineHeight: 1.55,
-                fontStyle: "italic",
-              }}
-            >
-              {job.reasoning}
-            </p>
-          </div>
-        )}
-
-        {/* Actions */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            marginTop: "14px",
-            flexWrap: "wrap",
-          }}
-        >
-          {validUrl ? (
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "16px" }}>
+          {validUrl && (
             <a
               href={job.url}
               target="_blank"
@@ -379,138 +244,104 @@ export function JobCard({
               onClick={(e) => e.stopPropagation()}
               style={{
                 ...btn,
-                color: "var(--blue-light)",
-                borderColor: "rgba(37,99,235,0.3)",
-                background: "rgba(37,99,235,0.08)",
+                background: "#0047FF",
+                color: "#FFFEF0",
                 textDecoration: "none",
               }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#053cd2"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "#0047FF"; }}
             >
-              <ExternalLink size={11} /> View job
+              <ExternalLink size={12} />
+              <span>Apply</span>
             </a>
-          ) : (
-            <span
-              style={{
-                ...btn,
-                color: "var(--muted)",
-                opacity: 0.45,
-                cursor: "not-allowed",
-              }}
-            >
-              <ExternalLink size={11} /> No link
-            </span>
           )}
+
           <button
             onClick={save}
-            disabled={saving || saved}
             style={{
               ...btn,
-              ...(saved
-                ? {
-                    color: "#34d399",
-                    borderColor: "rgba(5,150,105,0.3)",
-                    background: "rgba(5,150,105,0.08)",
-                  }
-                : {}),
+              background: saved ? "#C8FF00" : "transparent",
             }}
+            onMouseEnter={(e) => { if (!saved && !saving) e.currentTarget.style.background = "rgba(0,0,0,0.03)"; }}
+            onMouseLeave={(e) => { if (!saved && !saving) e.currentTarget.style.background = "transparent"; }}
           >
             {saving ? (
-              <Loader2 size={11} className="animate-spin" />
+              <Loader2 size={12} className="animate-spin" />
             ) : saved ? (
-              <Check size={11} />
+              <Check size={12} />
             ) : (
-              <BookmarkPlus size={11} />
+              <BookmarkPlus size={12} />
             )}
-            {saved ? "Saved" : "Save to tracker"}
+            <span>{saved ? "Saved" : "Save"}</span>
           </button>
-          <button onClick={genLetter} style={{ ...btn, marginLeft: "auto" }}>
-            <FileText size={11} /> Cover letter
+
+          <button
+            onClick={genLetter}
+            style={{ ...btn, background: "transparent" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.03)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+          >
+            <FileText size={12} />
+            <span>Draft Cover Letter</span>
           </button>
         </div>
       </div>
 
-      {/* Cover letter panel */}
       {showLetter && (
         <div
-          style={{ borderTop: "1px solid var(--border)", padding: "14px 16px" }}
+          style={{
+            borderTop: "3px solid #0A0A0A",
+            padding: "20px",
+            background: "rgba(200,255,0,0.03)",
+          }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "10px",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "12px",
-                fontWeight: 500,
-                color: "var(--cream)",
-                margin: 0,
-              }}
-            >
-              Cover letter draft
-            </p>
-            <div style={{ display: "flex", gap: "10px" }}>
-              {letter && (
-                <button
-                  onClick={() => navigator.clipboard.writeText(letter)}
-                  style={{
-                    fontSize: "11px",
-                    color: "var(--muted)",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    fontFamily: "var(--font-body)",
-                  }}
-                >
-                  Copy
-                </button>
-              )}
-              <button
-                onClick={() => setShowLetter(false)}
-                style={{
-                  fontSize: "11px",
-                  color: "var(--muted)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  fontFamily: "var(--font-body)",
-                }}
-              >
-                Hide
-              </button>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <Sparkles size={14} color="#0A0A0A" />
+              <span style={{ fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                AI Vault Copilot Draft
+              </span>
             </div>
-          </div>
-          {loadingLetter && !letter ? (
-            <div
+            <button
+              onClick={() => setShowLetter(false)}
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                fontSize: "12px",
-                color: "var(--muted)",
+                fontSize: "11px",
+                color: "#0A0A0A",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontWeight: 800,
+                textTransform: "uppercase",
+                textDecoration: "underline",
+                fontFamily: "'Space Grotesk', sans-serif",
               }}
             >
+              Hide
+            </button>
+          </div>
+
+          {loadingLetter && !letter ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", fontWeight: 700, color: "#0A0A0A" }}>
               <Loader2 size={12} className="animate-spin" />
-              Drafting…
+              <span>DRAFTING VAULT TRANSCRIPT...</span>
             </div>
           ) : (
             <div
               style={{
-                fontSize: "12.5px",
-                color: "var(--cream)",
-                lineHeight: 1.7,
-                background: "var(--field)",
-                borderRadius: "8px",
-                padding: "12px",
+                fontSize: "13px",
+                color: "#0A0A0A",
+                lineHeight: 1.6,
+                background: "#FFFEF0",
+                border: "2px solid #0A0A0A",
+                padding: "16px",
                 whiteSpace: "pre-wrap",
-                border: "1px solid var(--border)",
+                boxShadow: "2px 2px 0px #0A0A0A",
+                fontWeight: 500,
               }}
             >
               {letter}
-              {loadingLetter && <span className="cursor-blink" />}
+              {loadingLetter && <span className="cursor-blink" style={{ marginLeft: "4px", display: "inline-block", width: "6px", height: "14px", background: "#0A0A0A" }} />}
             </div>
           )}
         </div>
