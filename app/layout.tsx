@@ -1,36 +1,16 @@
-import type { Metadata } from 'next'
-import { ThemeToggle } from '@/components/ThemeToggle'
-import './globals.css'
+import "./globals.css";
 
-export const metadata: Metadata = {
-  title: 'CareerPilot — Your Agentic Career Co-pilot',
-  description: 'AI platform that hunts jobs, scores your fit, drafts your applications, and builds your learning roadmap.',
-  openGraph: {
-    title: 'CareerPilot',
-    description: 'Your agentic career co-pilot powered by AI',
-  },
-}
+export const metadata = {
+  title: "CareerPilot",
+  description: "Agentic Career Co-pilot",
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="grain" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                document.documentElement.dataset.theme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
-              } catch (_) {
-                document.documentElement.dataset.theme = 'light';
-              }
-            `,
-          }}
-        />
-      </head>
-      <body>
+    <html lang="en">
+      <body style={{ margin: 0, padding: 0 }}>
         {children}
-        <ThemeToggle />
       </body>
     </html>
-  )
+  );
 }
