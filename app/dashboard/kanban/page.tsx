@@ -10,10 +10,11 @@ import {
   GripVertical,
   Briefcase,
   TrendingUp,
-  CheckCircle2,
   XCircle,
   Clock,
   Trophy,
+  Sparkles,
+  AlertCircle,
 } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { JobModal } from "@/app/dashboard/jobs/JobModal";
@@ -39,50 +40,39 @@ interface Column {
   icon: React.ReactNode;
   accentColor: string;
   bgColor: string;
-  borderColor: string;
-  headerBg: string;
 }
 
 const COLUMNS: Column[] = [
   {
     id: "applied",
     label: "Applied",
-    icon: <Clock size={15} />,
-    accentColor: "#60a5fa",
-    bgColor: "rgba(37,99,235,0.06)",
-    borderColor: "rgba(37,99,235,0.25)",
-    headerBg: "rgba(37,99,235,0.12)",
+    icon: <Clock size={14} />,
+    accentColor: "#0047FF", // Electric Blue
+    bgColor: "#FFFEF0",
   },
   {
     id: "interviewing",
     label: "Interviewing",
-    icon: <TrendingUp size={15} />,
-    accentColor: "#fbbf24",
-    bgColor: "rgba(245,158,11,0.06)",
-    borderColor: "rgba(245,158,11,0.25)",
-    headerBg: "rgba(245,158,11,0.12)",
+    icon: <TrendingUp size={14} />,
+    accentColor: "#FF5500", // Intense Orange
+    bgColor: "#FFFEF0",
   },
   {
     id: "offer",
     label: "Offer",
-    icon: <Trophy size={15} />,
-    accentColor: "#34d399",
-    bgColor: "rgba(5,150,105,0.06)",
-    borderColor: "rgba(5,150,105,0.25)",
-    headerBg: "rgba(5,150,105,0.12)",
+    icon: <Trophy size={14} />,
+    accentColor: "#C8FF00", // Neon Chartreuse
+    bgColor: "#FFFEF0",
   },
   {
     id: "rejected",
     label: "Rejected",
-    icon: <XCircle size={15} />,
-    accentColor: "#f87171",
-    bgColor: "rgba(239,68,68,0.06)",
-    borderColor: "rgba(239,68,68,0.25)",
-    headerBg: "rgba(239,68,68,0.12)",
+    icon: <XCircle size={14} />,
+    accentColor: "#0A0A0A", // Flat Pitch Black
+    bgColor: "#FFFEF0",
   },
 ];
 
-/** Map a saved DB record to the Job shape JobModal expects */
 function toJob(saved: SavedJob): Job {
   return {
     id: saved.id,
@@ -146,7 +136,6 @@ export default function KanbanPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [modalJob, setModalJob] = useState<Job | null>(null);
 
-  // Drag state
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [dragOverCol, setDragOverCol] = useState<ColumnId | null>(null);
   const dragJobRef = useRef<SavedJob | null>(null);
@@ -190,15 +179,13 @@ export default function KanbanPage() {
     init();
   }, [router, supabase, fetchJobs]);
 
-  // ── Drag handlers ────────────────────────────────────────────────────────────
   const handleDragStart = (e: React.DragEvent, job: SavedJob) => {
     dragJobRef.current = job;
     setDraggedId(job.id);
     e.dataTransfer.effectAllowed = "move";
-    // Ghost image delay trick to allow state to update first
     setTimeout(() => {
       const el = document.getElementById(`card-${job.id}`);
-      if (el) el.style.opacity = "0.35";
+      if (el) el.style.opacity = "0.4";
     }, 0);
   };
 
@@ -228,11 +215,8 @@ export default function KanbanPage() {
 
     const prevJobs = [...jobs];
 
-    // Optimistic update
     setJobs((prev) =>
-      prev.map((j) =>
-        j.id === job.id ? { ...j, status: colId } : j,
-      ),
+      prev.map((j) => (j.id === job.id ? { ...j, status: colId } : j)),
     );
     setDragOverCol(null);
 
@@ -245,12 +229,10 @@ export default function KanbanPage() {
       if (error) throw error;
     } catch (err) {
       console.error("Failed to update status:", err);
-      // Revert on failure
       setJobs(prevJobs);
     }
   };
 
-  // ── Delete ────────────────────────────────────────────────────────────────────
   const handleDelete = async (jobId: string) => {
     setDeleting(jobId);
     try {
@@ -268,7 +250,6 @@ export default function KanbanPage() {
     }
   };
 
-  // ── Helpers ───────────────────────────────────────────────────────────────────
   const getColJobs = (colId: ColumnId) => jobs.filter((j) => j.status === colId);
 
   if (!user || loading) {
@@ -276,14 +257,19 @@ export default function KanbanPage() {
       <div
         style={{
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           minHeight: "100vh",
-          background: "var(--bg)",
-          color: "var(--muted)",
+          background: "#FFFEF0",
+          fontFamily: "'Space Grotesk', sans-serif",
+          gap: "12px",
         }}
       >
-        <Loader2 size={28} className="animate-spin" />
+        <Loader2 size={28} color="#0047FF" className="animate-spin" />
+        <p style={{ fontSize: "12px", fontWeight: 800, textTransform: "uppercase", color: "#0A0A0A" }}>
+          Loading Pipeline Framework...
+        </p>
       </div>
     );
   }
@@ -292,336 +278,272 @@ export default function KanbanPage() {
 
   return (
     <>
-      {/* Job Detail Modal */}
       {modalJob && (
         <JobModal job={modalJob} onClose={() => setModalJob(null)} />
       )}
       <div
         style={{
           minHeight: "100vh",
-          background: "var(--bg)",
-          padding: "36px 32px",
+          background: "#FFFEF0",
+          padding: "40px 24px",
           boxSizing: "border-box",
+          fontFamily: "'Space Grotesk', sans-serif",
+          color: "#0A0A0A",
         }}
       >
-      {/* Header */}
-      <div style={{ marginBottom: "32px" }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "16px",
-            marginBottom: "20px",
-          }}
-        >
-          <div>
-            <h1
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "28px",
-                fontWeight: 700,
-                color: "var(--white)",
-                margin: "0 0 6px",
-              }}
-            >
-              Application Tracker
-            </h1>
-            <p style={{ color: "var(--muted)", fontSize: "14.5px", margin: 0 }}>
-              Drag cards between columns to update your application status
-            </p>
+        {/* Top Branding Section Header */}
+        <div style={{ marginBottom: "32px", border: "3px solid #0A0A0A", padding: "24px", boxShadow: "5px 5px 0px #0A0A0A", background: "transparent" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
+                <div style={{ width: "6px", height: "24px", background: "#0047FF", border: "2px solid #0A0A0A" }} />
+                <h1 style={{ fontSize: "22px", fontWeight: 900, margin: 0, textTransform: "uppercase", letterSpacing: "-0.01em" }}>
+                  Application Tracker
+                </h1>
+              </div>
+              <p style={{ color: "#555", fontSize: "14px", margin: 0, fontWeight: 500, lineHeight: 1.5 }}>
+                Drag your indexed tokens between state matrices to update your pipeline vectors in real time.
+              </p>
+            </div>
+
+            {/* Quick Filter Metadata Counters */}
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              {COLUMNS.map((col) => {
+                const count = getColJobs(col.id).length;
+                return (
+                  <div
+                    key={col.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      background: col.accentColor === "#0A0A0A" ? "#0A0A0A" : "#FFFEF0",
+                      border: "2px solid #0A0A0A",
+                      padding: "6px 14px",
+                      fontSize: "12px",
+                      fontWeight: 800,
+                      color: col.accentColor === "#0A0A0A" ? "#FFFEF0" : "#0A0A0A",
+                      textTransform: "uppercase",
+                      boxShadow: "2px 2px 0px #0A0A0A",
+                    }}
+                  >
+                    {col.icon}
+                    <span>{count} {col.label}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Summary pills */}
-          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          {/* Neo Segmented Custom Progress Bar */}
+          {totalJobs > 0 && (
+            <div
+              style={{
+                marginTop: "24px",
+                borderTop: "3px dashed #0A0A0A",
+                paddingTop: "20px",
+                display: "flex",
+                gap: "16px",
+                alignItems: "center",
+              }}
+            >
+              <span style={{ fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "#666", flexShrink: 0 }}>
+                Pipeline Flow Ratio:
+              </span>
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  height: "16px",
+                  border: "2px solid #0A0A0A",
+                  background: "#FFFEF0",
+                  overflow: "hidden",
+                }}
+              >
+                {COLUMNS.map((col) => {
+                  const pct = (getColJobs(col.id).length / totalJobs) * 100;
+                  if (pct === 0) return null;
+                  return (
+                    <div
+                      key={col.id}
+                      title={`${col.label}: ${getColJobs(col.id).length}`}
+                      style={{
+                        width: `${pct}%`,
+                        background: col.accentColor,
+                        borderRight: "2px solid #0A0A0A",
+                        transition: "width 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+                      }}
+                    />
+                  );
+                })}
+              </div>
+              <span style={{ fontSize: "12px", fontWeight: 800, textTransform: "uppercase", background: "#C8FF00", border: "2px solid #0A0A0A", padding: "2px 8px", flexShrink: 0 }}>
+                {totalJobs} Loaded
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Empty State Vector View */}
+        {totalJobs === 0 ? (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "16px",
+              padding: "64px 24px",
+              background: "transparent",
+              border: "3px dashed #0A0A0A",
+              textAlign: "center",
+            }}
+          >
+            <Briefcase size={32} color="#0A0A0A" />
+            <div>
+              <p style={{ fontSize: "14px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.02em", color: "#0A0A0A", margin: "0 0 6px" }}>
+                Pipeline Register Empty
+              </p>
+              <p style={{ fontSize: "13px", color: "#555", margin: 0, fontWeight: 500 }}>
+                Discover positions on the Job Hunter terminal and save them to seed this interface.
+              </p>
+            </div>
+          </div>
+        ) : (
+          /* Kanban Responsive Board Grid Component */
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gap: "20px",
+              alignItems: "start",
+            }}
+            className="kanban-grid"
+          >
             {COLUMNS.map((col) => {
-              const count = getColJobs(col.id).length;
+              const colJobs = getColJobs(col.id);
+              const isOver = dragOverCol === col.id;
+
               return (
                 <div
                   key={col.id}
+                  onDragOver={(e) => handleDragOver(e, col.id)}
+                  onDragLeave={() => setDragOverCol(null)}
+                  onDrop={(e) => handleDrop(e, col.id)}
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    background: col.bgColor,
-                    border: `1px solid ${col.borderColor}`,
-                    borderRadius: "20px",
-                    padding: "5px 12px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    color: col.accentColor,
+                    background: isOver ? "rgba(200,255,0,0.05)" : "transparent",
+                    border: isOver ? "3px solid #C8FF00" : "3px solid #0A0A0A",
+                    boxShadow: isOver ? "6px 6px 0px #0A0A0A" : "4px 4px 0px #0A0A0A",
+                    transition: "all 0.15s ease",
+                    minHeight: "450px",
                   }}
                 >
-                  {col.icon}
-                  {count} {col.label}
+                  {/* Column Neo-Brutalist Header Strip */}
+                  <div
+                    style={{
+                      background: col.accentColor,
+                      borderBottom: "3px solid #0A0A0A",
+                      padding: "12px 14px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        color: col.accentColor === "#C8FF00" || col.accentColor === "#FFFEF0" ? "#0A0A0A" : "#FFFEF0",
+                        fontWeight: 900,
+                        fontSize: "13px",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.02em",
+                      }}
+                    >
+                      {col.icon}
+                      {col.label}
+                    </div>
+                    <span
+                      style={{
+                        background: "#0A0A0A",
+                        color: "#FFFEF0",
+                        fontSize: "11px",
+                        fontWeight: 800,
+                        padding: "2px 8px",
+                        border: "1px solid #0A0A0A",
+                      }}
+                    >
+                      {colJobs.length}
+                    </span>
+                  </div>
+
+                  {/* Matrix Card Stack Container */}
+                  <div
+                    style={{
+                      padding: "12px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "12px",
+                    }}
+                  >
+                    {colJobs.length === 0 ? (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minHeight: "140px",
+                          gap: "6px",
+                          border: "2px dashed rgba(0,0,0,0.15)",
+                          marginTop: "4px",
+                        }}
+                      >
+                        <p style={{ fontSize: "11px", color: "#777", margin: 0, fontWeight: 700, textTransform: "uppercase" }}>
+                          Drop Node Vector
+                        </p>
+                      </div>
+                    ) : (
+                      colJobs.map((job) => (
+                        <KanbanCard
+                          key={job.id}
+                          job={job}
+                          col={col}
+                          isDragging={draggedId === job.id}
+                          isDeleting={deleting === job.id}
+                          onDragStart={handleDragStart}
+                          onDragEnd={handleDragEnd}
+                          onDelete={handleDelete}
+                          onOpenModal={(j) => setModalJob(toJob(j))}
+                        />
+                      ))
+                    )}
+                  </div>
                 </div>
               );
             })}
           </div>
-        </div>
-
-        {/* Progress bar */}
-        {totalJobs > 0 && (
-          <div
-            style={{
-              background: "var(--surface)",
-              border: "1px solid var(--border)",
-              borderRadius: "12px",
-              padding: "16px 20px",
-              display: "flex",
-              gap: "16px",
-              alignItems: "center",
-            }}
-          >
-            <span
-              style={{ fontSize: "12px", color: "var(--muted)", flexShrink: 0 }}
-            >
-              Pipeline
-            </span>
-            <div
-              style={{
-                flex: 1,
-                display: "flex",
-                height: "8px",
-                borderRadius: "4px",
-                overflow: "hidden",
-                background: "var(--field)",
-                gap: "2px",
-              }}
-            >
-              {COLUMNS.map((col) => {
-                const pct = (getColJobs(col.id).length / totalJobs) * 100;
-                if (pct === 0) return null;
-                return (
-                  <div
-                    key={col.id}
-                    title={`${col.label}: ${getColJobs(col.id).length}`}
-                    style={{
-                      width: `${pct}%`,
-                      background: col.accentColor,
-                      transition: "width 0.4s ease",
-                      borderRadius: "4px",
-                    }}
-                  />
-                );
-              })}
-            </div>
-            <span
-              style={{ fontSize: "12px", color: "var(--muted)", flexShrink: 0 }}
-            >
-              {totalJobs} total
-            </span>
-          </div>
         )}
-      </div>
 
-      {/* Kanban Board */}
-      {totalJobs === 0 ? (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "16px",
-            padding: "80px 24px",
-            background: "var(--surface)",
-            border: "1px dashed var(--border)",
-            borderRadius: "20px",
-            textAlign: "center",
-          }}
-        >
-          <Briefcase size={40} color="var(--muted)" style={{ opacity: 0.3 }} />
-          <div>
-            <p
-              style={{
-                fontSize: "16px",
-                fontWeight: 600,
-                color: "var(--cream)",
-                margin: "0 0 6px",
-                fontFamily: "var(--font-display)",
-              }}
-            >
-              No applications yet
-            </p>
-            <p style={{ fontSize: "13.5px", color: "var(--muted)", margin: 0 }}>
-              Save jobs from the Job Hunter to start tracking them here
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: "16px",
-            alignItems: "start",
-          }}
-          className="kanban-grid"
-        >
-          {COLUMNS.map((col) => {
-            const colJobs = getColJobs(col.id);
-            const isOver = dragOverCol === col.id;
-
-            return (
-              <div
-                key={col.id}
-                onDragOver={(e) => handleDragOver(e, col.id)}
-                onDragLeave={() => setDragOverCol(null)}
-                onDrop={(e) => handleDrop(e, col.id)}
-                style={{
-                  background: isOver ? col.bgColor : "var(--surface)",
-                  border: `1px solid ${isOver ? col.accentColor : "var(--border)"}`,
-                  borderRadius: "16px",
-                  overflow: "hidden",
-                  transition: "all 0.2s",
-                  boxShadow: isOver
-                    ? `0 0 0 2px ${col.accentColor}30`
-                    : "none",
-                  minHeight: "300px",
-                }}
-              >
-                {/* Column Header */}
-                <div
-                  style={{
-                    background: col.headerBg,
-                    borderBottom: `1px solid ${col.borderColor}`,
-                    padding: "14px 16px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      color: col.accentColor,
-                      fontWeight: 600,
-                      fontSize: "13.5px",
-                      fontFamily: "var(--font-display)",
-                    }}
-                  >
-                    {col.icon}
-                    {col.label}
-                  </div>
-                  <span
-                    style={{
-                      background: col.bgColor,
-                      border: `1px solid ${col.borderColor}`,
-                      color: col.accentColor,
-                      fontSize: "11px",
-                      fontWeight: 700,
-                      borderRadius: "10px",
-                      padding: "2px 8px",
-                      minWidth: "20px",
-                      textAlign: "center",
-                    }}
-                  >
-                    {colJobs.length}
-                  </span>
-                </div>
-
-                {/* Cards */}
-                <div
-                  style={{
-                    padding: "12px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px",
-                    minHeight: "200px",
-                  }}
-                >
-                  {colJobs.length === 0 ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        minHeight: "120px",
-                        gap: "8px",
-                        opacity: isOver ? 0.8 : 0.35,
-                        transition: "opacity 0.2s",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "36px",
-                          height: "36px",
-                          border: `2px dashed ${col.accentColor}`,
-                          borderRadius: "8px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: col.accentColor,
-                        }}
-                      >
-                        +
-                      </div>
-                      <p
-                        style={{
-                          fontSize: "11.5px",
-                          color: "var(--muted)",
-                          margin: 0,
-                          textAlign: "center",
-                        }}
-                      >
-                        Drop cards here
-                      </p>
-                    </div>
-                  ) : (
-                    colJobs.map((job) => (
-                      <KanbanCard
-                        key={job.id}
-                        job={job}
-                        col={col}
-                        isDragging={draggedId === job.id}
-                        isDeleting={deleting === job.id}
-                        onDragStart={handleDragStart}
-                        onDragEnd={handleDragEnd}
-                        onDelete={handleDelete}
-                        onOpenModal={(j) => setModalJob(toJob(j))}
-                      />
-                    ))
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      <style>{`
-        @media (max-width: 1200px) {
-          .kanban-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
+        <style>{`
+          @media (max-width: 1200px) {
+            .kanban-grid { grid-template-columns: repeat(2, 1fr) !important; }
           }
-        }
-        @media (max-width: 640px) {
-          .kanban-grid {
-            grid-template-columns: 1fr !important;
+          @media (max-width: 640px) {
+            .kanban-grid { grid-template-columns: 1fr !important; }
           }
-        }
-        .kanban-card {
-          cursor: pointer;
-          user-select: none;
-        }
-        .kanban-card:hover .card-grip {
-          opacity: 1 !important;
-        }
-        .kanban-card:hover .card-delete {
-          opacity: 1 !important;
-        }
-      `}</style>
+          .kanban-card { cursor: grab; user-select: none; }
+          .kanban-card:active { cursor: grabbing; }
+          .kanban-card:hover .card-grip { opacity: 1 !important; }
+          .kanban-card:hover .card-delete { opacity: 1 !important; }
+        `}</style>
       </div>
     </>
   );
 }
 
-// ─── Kanban Card ────────────────────────────────────────────────────────────────
+// ─── Individual Board Card Element ───────────────────────────────────────────────
 interface CardProps {
   job: SavedJob;
   col: Column;
@@ -660,12 +582,12 @@ function KanbanCard({
         })
       : null;
 
-  const fitColor =
-    job.fit_score >= 80
-      ? "#34d399"
-      : job.fit_score >= 60
-        ? "#fbbf24"
-        : "#f87171";
+  const scoreBadge =
+    job.fit_score >= 75
+      ? { bg: "#C8FF00", text: "#0A0A0A" }
+      : job.fit_score >= 50
+        ? { bg: "#0047FF", text: "#FFFEF0" }
+        : { bg: "#FF5500", text: "#FFFEF0" };
 
   return (
     <div
@@ -676,62 +598,50 @@ function KanbanCard({
       onClick={() => onOpenModal(job)}
       className="kanban-card"
       style={{
-        background: isDragging ? "var(--field)" : "var(--bg)",
-        border: `1px solid ${isDragging ? col.accentColor : "var(--border)"}`,
-        borderRadius: "12px",
+        background: "#FFFEF0",
+        border: "2px solid #0A0A0A",
         padding: "14px",
-        transition: "box-shadow 0.18s, border-color 0.18s, opacity 0.2s, background 0.15s",
-        boxShadow: isDragging
-          ? `0 8px 24px rgba(0,0,0,0.35), 0 0 0 2px ${col.accentColor}50`
-          : "0 1px 4px rgba(0,0,0,0.15)",
+        transition: "all 0.1s ease",
+        boxShadow: isDragging ? "6px 6px 0px #0A0A0A" : "2px 2px 0px #0A0A0A",
         position: "relative",
-        transform: isDragging ? "rotate(1.5deg)" : "none",
+        transform: isDragging ? "rotate(1deg) scale(0.98)" : "none",
       }}
       onMouseEnter={(e) => {
         if (!isDragging) {
-          e.currentTarget.style.borderColor = col.accentColor;
-          e.currentTarget.style.background = "var(--surface)";
+          e.currentTarget.style.transform = "translate(-1px, -1px)";
+          e.currentTarget.style.boxShadow = "4px 4px 0px #0A0A0A";
         }
       }}
       onMouseLeave={(e) => {
         if (!isDragging) {
-          e.currentTarget.style.borderColor = "var(--border)";
-          e.currentTarget.style.background = "var(--bg)";
+          e.currentTarget.style.transform = "none";
+          e.currentTarget.style.boxShadow = "2px 2px 0px #0A0A0A";
         }
       }}
     >
-      {/* Top row: grip + title + delete */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          gap: "8px",
-          marginBottom: "8px",
-        }}
-      >
-        {/* Grip */}
+      {/* Structural Card Row Actions */}
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", marginBottom: "8px" }}>
         <div
           className="card-grip"
           style={{
             flexShrink: 0,
-            color: "var(--muted)",
-            opacity: 0,
+            color: "#0A0A0A",
+            opacity: 0.25,
             transition: "opacity 0.15s",
-            paddingTop: "1px",
+            paddingTop: "2px",
           }}
         >
-          <GripVertical size={14} />
+          <GripVertical size={13} />
         </div>
 
-        {/* Title + company */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <p
             style={{
               margin: "0 0 2px",
-              fontSize: "13.5px",
-              fontWeight: 600,
-              color: "var(--white)",
-              fontFamily: "var(--font-display)",
+              fontSize: "14px",
+              fontWeight: 900,
+              color: "#0A0A0A",
+              textTransform: "uppercase",
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
@@ -743,8 +653,9 @@ function KanbanCard({
           <p
             style={{
               margin: 0,
-              fontSize: "11.5px",
-              color: "var(--muted)",
+              fontSize: "12px",
+              fontWeight: 700,
+              color: "#555",
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
@@ -754,7 +665,7 @@ function KanbanCard({
           </p>
         </div>
 
-        {/* Delete */}
+        {/* Flat Custom Target Delete Handle Toggle */}
         <button
           className="card-delete"
           onClick={(e) => {
@@ -764,30 +675,29 @@ function KanbanCard({
           disabled={isDeleting}
           style={{
             flexShrink: 0,
-            width: "26px",
-            height: "26px",
+            width: "24px",
+            height: "24px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             background: "transparent",
-            border: "1px solid transparent",
-            borderRadius: "6px",
-            color: "var(--muted)",
+            border: "2px solid transparent",
+            color: "#0A0A0A",
             cursor: isDeleting ? "not-allowed" : "pointer",
             opacity: 0,
-            transition: "opacity 0.15s, background 0.15s, color 0.15s",
+            transition: "all 0.1s",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(239,68,68,0.12)";
-            e.currentTarget.style.borderColor = "rgba(239,68,68,0.3)";
-            e.currentTarget.style.color = "#f87171";
+            e.currentTarget.style.background = "#FF5500";
+            e.currentTarget.style.borderColor = "#0A0A0A";
+            e.currentTarget.style.color = "#FFFEF0";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = "transparent";
             e.currentTarget.style.borderColor = "transparent";
-            e.currentTarget.style.color = "var(--muted)";
+            e.currentTarget.style.color = "#0A0A0A";
           }}
-          title="Remove"
+          title="Remove application row"
         >
           {isDeleting ? (
             <Loader2 size={11} className="animate-spin" />
@@ -797,15 +707,18 @@ function KanbanCard({
         </button>
       </div>
 
-      {/* Notes */}
+      {/* Profile Reasoning Context Box */}
       {job.notes && (
-        <p
+        <div
           style={{
-            margin: "0 0 10px",
+            margin: "8px 0 12px",
             fontSize: "11px",
-            color: "var(--muted)",
-            fontStyle: "italic",
+            color: "#0A0A0A",
             lineHeight: 1.4,
+            background: "rgba(0,0,0,0.02)",
+            borderLeft: "2px solid #0A0A0A",
+            padding: "4px 8px",
+            fontWeight: 500,
             display: "-webkit-box",
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
@@ -813,45 +726,42 @@ function KanbanCard({
           }}
         >
           {job.notes}
-        </p>
+        </div>
       )}
 
-      {/* Bottom row: fit score + date + link */}
+      {/* Lower Metrics Section Container Layout */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: "8px",
-          marginTop: "10px",
+          marginTop: "12px",
           paddingTop: "10px",
-          borderTop: "1px solid var(--border)",
+          borderTop: "2px dashed #0A0A0A",
         }}
       >
-        {/* Fit score */}
+        {/* Core Index Score Vector */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "5px",
+            gap: "4px",
+            background: scoreBadge.bg,
+            color: scoreBadge.text,
+            border: "1px solid #0A0A0A",
+            padding: "2px 6px",
           }}
         >
-          <CheckCircle2 size={11} color={fitColor} />
-          <span
-            style={{
-              fontSize: "11px",
-              fontWeight: 700,
-              color: fitColor,
-              fontFamily: "var(--font-display)",
-            }}
-          >
-            {job.fit_score}% fit
+          <Sparkles size={10} />
+          <span style={{ fontSize: "10px", fontWeight: 900, textTransform: "uppercase" }}>
+            {job.fit_score}% Fit
           </span>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           {appliedDate && (
-            <span style={{ fontSize: "10.5px", color: "var(--muted)" }}>
+            <span style={{ fontSize: "10px", color: "#666", fontWeight: 700, textTransform: "uppercase" }}>
               {appliedDate}
             </span>
           )}
@@ -863,16 +773,20 @@ function KanbanCard({
               onClick={(e) => e.stopPropagation()}
               style={{
                 display: "flex",
-                color: col.accentColor,
-                textDecoration: "none",
-                opacity: 0.7,
-                transition: "opacity 0.15s",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "20px",
+                height: "20px",
+                border: "1px solid #0A0A0A",
+                background: "#FFFEF0",
+                color: "#0A0A0A",
+                boxShadow: "1px 1px 0px #0A0A0A",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
-              title="Open job posting"
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#C8FF00"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "#FFFEF0"; }}
+              title="Open outbound job target posting link"
             >
-              <ExternalLink size={12} />
+              <ExternalLink size={10} />
             </a>
           )}
         </div>
