@@ -385,9 +385,10 @@ export default function DashboardLayout({
                 cursor: "pointer",
                 fontWeight: 700,
                 fontSize: "13px",
+                fontFamily: "'Space Grotesk', sans-serif",
               }}
             >
-              Sign Out
+              SIGN OUT
             </button>
           </div>
         </div>

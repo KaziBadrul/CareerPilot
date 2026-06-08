@@ -59,6 +59,44 @@ Common environment variables (summary)
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — the anon/public key used by the frontend client.
 - `SUPABASE_SERVICE_ROLE_KEY` — (optional) server-only key for privileged operations; do NOT commit this to source control.
 
+Full environment variable list (what this project uses)
+
+- `NEXT_PUBLIC_SUPABASE_URL` (public) — your Supabase project URL.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` (public) — Supabase anon/public key used by the frontend.
+- `SUPABASE_SERVICE_KEY` (server-only) — service role key for privileged server operations. Keep this secret and do not expose it to the browser.
+- `GROQ_API_KEY` (server or env-specific) — API key used by any GROQ/Headless CMS integrations.
+- `QDRANT_URL` (server) — Qdrant vector DB HTTP endpoint.
+- `QDRANT_API_KEY` (server) — Qdrant API key for your cluster.
+- `QDRANT_CLUSTER_ENDPOINT` (server) — optional cluster endpoint used by some Qdrant clients.
+- `APIFY_API_TOKEN` (server) — Apify token for scraping/actor usage.
+- `GEMINI_API_KEY` (server or private) — API key for Gemini integrations (treat as secret).
+
+Never commit secrets to the repository. Use a `.env.local` file for local development and set the same variables in your Vercel project settings for production.
+
+Example `.env.local` template (do not commit):
+
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_KEY=
+GROQ_API_KEY=
+QDRANT_URL=
+QDRANT_API_KEY=
+QDRANT_CLUSTER_ENDPOINT=
+APIFY_API_TOKEN=
+GEMINI_API_KEY=
+```
+
+Which keys are public vs server-only
+
+- Public (safe for browser): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- Server-only (do not expose to browser / Vercel must mark as secret): `SUPABASE_SERVICE_KEY`, `GROQ_API_KEY`, `QDRANT_API_KEY`, `APIFY_API_TOKEN`, `GEMINI_API_KEY`.
+
+Setting environment variables on Vercel
+
+1. Go to your Vercel project → Settings → Environment Variables.
+2. Add the variables above. For server-only keys, set them for the `Production` and `Preview` scopes but do not use the `NEXT_PUBLIC_` prefix unless they are intended for client-side usage.
+
 Deployment
 
 This project is deployable to Vercel. It's already deployed at:
