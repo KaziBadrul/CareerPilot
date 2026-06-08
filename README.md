@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CareerPilot
 
-## Getting Started
+CareerPilot is a Next.js application that helps job seekers discover, track, and apply for jobs with AI-powered assistance. It integrates with Supabase for authentication and storage and provides a dashboard experience (job search, saved jobs, recent searches, AI assistant, and progress tracking).
 
-First, run the development server:
+Live demo: https://career-pilot-aiapp.vercel.app/
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Key features
+
+- Job Hunter: search for jobs, view full job details in a polished modal, and render descriptions as Markdown.
+- Saved Jobs: persist jobs you plan to apply for using Supabase.
+- Recent Searches: store and re-run previous searches.
+- AI Assistant: chat and generate cover letters (integrated UI components in the dashboard).
+- Authentication: signup / login via Supabase, profile persistence in a `users` table.
+
+Repository layout
+
+- `app/` — Next.js App Router pages and API routes.
+- `app/dashboard/` — main dashboard and job hunter UI.
+- `app/api/` — server route handlers (save job, search-history, etc.).
+- `lib/supabase/` — Supabase client helper.
+- `migrations/` — SQL migrations created for additional tables (e.g. `job_searches`).
+
+Local development
+
+1. Install dependencies:
+
+```powershell
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Create a Supabase project and add the required environment variables to a `.env.local` file at the project root. At minimum set:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+# (optional) SUPABASE_SERVICE_ROLE_KEY=your-service-role-key  // only for secure server-side ops
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. (Optional) Run the SQL migration(s) in `migrations/` to create the `job_searches` table and others if you want server-side persistence:
 
-## Learn More
+Open your Supabase SQL editor and run the SQL in `migrations/create_job_searches_table.sql`.
 
-To learn more about Next.js, take a look at the following resources:
+4. Run the dev server:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```powershell
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+5. Open `http://localhost:3000` and test the app. Log in / sign up using Supabase auth to access the dashboard.
 
-## Deploy on Vercel
+Notes about authentication & security
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- The app currently uses the client-side Supabase helper (`lib/supabase/client.ts`) for most user operations. This is fine for normal authenticated frontend flows (reading the current user's non-sensitive data).
+- For sensitive, server-side operations (admin queries, bulk writes, or elevated privileges), use a server-side Supabase client with a service role key or implement secure server API routes.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Common environment variables (summary)
+
+- `NEXT_PUBLIC_SUPABASE_URL` — your Supabase URL.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — the anon/public key used by the frontend client.
+- `SUPABASE_SERVICE_ROLE_KEY` — (optional) server-only key for privileged operations; do NOT commit this to source control.
+
+Deployment
+
+This project is deployable to Vercel. It's already deployed at:
+
+https://career-pilot-aiapp.vercel.app/
+
+To deploy yourself:
+
+1. Push the repository to GitHub (or another Git provider).
+2. Create a new Vercel project, link the repo, and set the same environment variables in the Vercel dashboard.
+3. Vercel will handle building and deploying the Next.js app automatically.
+
+Troubleshooting
+
+- If pages that require authentication are accessible when you expect them protected, confirm your Supabase keys and session handling are correct.
+- If images or logos are not loading, check any external URLs or the Next.js `next.config.js` image domains.
+- If you see lint or type errors locally after edits, run `npm run dev` and read the console — the app uses TypeScript and the Next.js App Router which surface build-time errors.
+
+Contributing
+
+- Feel free to open PRs or issues. Keep UI changes consistent with the existing design system in `app/` and add tests when possible.
+
+License
+
+- This project does not include a license file. Add a license file if you plan to release the code publicly.
+
+Contact
+
+- If you want me to help with server-side auth protection, add editable profile fields, or wire additional Supabase policies, tell me which piece to implement next.
+
+Enjoy! 🚀
