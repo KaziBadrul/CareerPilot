@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { JobCard } from "./JobCard";
 import { JobModal } from "./JobModal";
 import {
@@ -14,6 +14,12 @@ import {
 } from "lucide-react";
 import type { Job } from "./types";
 
+interface ParsedSearch {
+  keyword: string;
+  country?: string;
+  remote_only?: boolean;
+}
+
 const EXAMPLES = [
   "ML internships in Dhaka open this month",
   "Remote backend developer roles",
@@ -24,20 +30,23 @@ const EXAMPLES = [
 export function JobSearchPage({
   userId,
   hasCV,
+  initialQuery = "",
 }: {
   userId: string;
   hasCV: boolean;
+  initialQuery?: string;
 }) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [parsed, setParsed] = useState<any>(null);
+  const [parsed, setParsed] = useState<ParsedSearch | null>(null);
   const [searched, setSearched] = useState(false);
   const [locationFilter, setLocationFilter] = useState<string>("");
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const autoSearchQuery = useRef<string>("");
 
-  const search = async (q?: string) => {
+  const search = useCallback(async (q?: string) => {
     const sq = (q ?? query).trim();
     if (!sq || loading) return;
     if (q) setQuery(q);
@@ -79,7 +88,16 @@ export function JobSearchPage({
     } finally {
       setLoading(false);
     }
-  };
+  }, [loading, query, userId]);
+
+  useEffect(() => {
+    const q = initialQuery.trim();
+    if (!q || autoSearchQuery.current === q) return;
+
+    autoSearchQuery.current = q;
+    setQuery(q);
+    void search(q);
+  }, [initialQuery, search]);
 
   // Derive unique locations from fetched jobs
   const locationOptions = useMemo(() => {

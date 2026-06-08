@@ -25,6 +25,38 @@ export async function POST(request: NextRequest) {
 
     const supabase = createAdminClient();
 
+    // Keep the public users row in sync so the foreign key on job_searches
+    // does not block search history for users who have not uploaded a CV yet.
+    try {
+      const { data: existingUser, error: userLookupError } = await supabase
+        .from("users")
+        .select("id")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (userLookupError) throw userLookupError;
+
+      if (!existingUser) {
+        let email = "";
+        try {
+          const { data: authUser, error: authUserError } =
+            await supabase.auth.admin.getUserById(userId);
+          if (authUserError) throw authUserError;
+          email = authUser?.user?.email ?? "";
+        } catch (authErr) {
+          console.error("Failed to fetch auth user for search history:", authErr);
+        }
+
+        const { error: provisionError } = await supabase
+          .from("users")
+          .insert({ id: userId, email });
+
+        if (provisionError) throw provisionError;
+      }
+    } catch (provisionErr) {
+      console.error("User provisioning check failed for search history:", provisionErr);
+    }
+
     const { data, error } = await supabase
       .from("job_searches")
       .insert({
