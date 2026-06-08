@@ -17,7 +17,8 @@ Key features
 - Authentication: signup / login via Supabase, profile persistence in a `users` table.
 
 ## Previews
-<img width="1920" height="988" alt="image" src="https://github.com/user-attachments/assets/155a4ce7-c70b-4343-9f33-bd327cd919dd" /> <br/>
+<img width="1920" height="989" alt="image" src="https://github.com/user-attachments/assets/c38b6f53-149f-4534-8799-282a74c28514" />
+ <br/>
 <img width="1920" height="992" alt="image" src="https://github.com/user-attachments/assets/59ad4541-138f-4114-85dd-ddb2d010ca0a" /> <br/>
 <img width="1920" height="991" alt="image" src="https://github.com/user-attachments/assets/863e2fbb-beb2-479f-8fb7-554d0cefc21c" /> <br/>
 <img width="1920" height="992" alt="image" src="https://github.com/user-attachments/assets/240831fc-5cdf-4e1a-952d-9d53663d5be1" /> <br/>
