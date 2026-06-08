@@ -5,8 +5,8 @@ import Link from 'next/link'
 import { Zap, Menu, X } from 'lucide-react'
 
 export function Navbar() {
-  const [scrolled,    setScrolled]    = useState(false)
-  const [mobileOpen,  setMobileOpen]  = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30)
@@ -16,18 +16,18 @@ export function Navbar() {
 
   const links = [
     { href: '#features', label: 'Features' },
-    { href: '#how',      label: 'How it works' },
-    { href: '#pricing',  label: 'Pricing' },
+    { href: '#how', label: 'How it works' },
+    { href: '#pricing', label: 'Pricing' },
   ]
 
   return (
     <header
       style={{
-        position:   'fixed',
-        top:        0,
-        left:       0,
-        right:      0,
-        zIndex:     100,
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 100,
         transition: 'all 0.3s ease',
         background: scrolled ? 'var(--surface-2)' : 'transparent',
         backdropFilter: scrolled ? 'blur(16px)' : 'none',
@@ -47,11 +47,13 @@ export function Navbar() {
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
           <div style={{
             width: '30px', height: '30px',
-            background: 'linear-gradient(135deg, #2563eb, #3b82f6)',
+            // background: 'linear-gradient(135deg, #2563eb, #3b82f6)',
             borderRadius: '8px',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Zap size={15} color="#fff" />
+            {/* <Zap size={15} color="#fff" /> */}
+            {/* favicon icon as logo */}
+            <img src="/favicon.ico" alt="Logo" style={{ width: '30px', height: '30px', borderRadius: '8px' }} />
           </div>
           <span style={{
             fontFamily: 'var(--font-display)',

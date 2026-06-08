@@ -11,6 +11,8 @@ import {
   Bookmark,
 } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
+import { JobModal } from "@/app/dashboard/jobs/JobModal";
+import type { Job } from "@/app/dashboard/jobs/types";
 
 interface SavedJob {
   id: string;
@@ -38,6 +40,60 @@ const statusColors: Record<
   rejected: { bg: "rgba(239,68,68,0.12)", text: "#f87171", label: "Rejected" },
 };
 
+/** Map a saved DB record to the Job shape JobModal expects */
+function toJob(saved: SavedJob): Job {
+  return {
+    id: saved.id,
+    title: saved.job_title,
+    company: saved.company,
+    url: saved.job_url,
+    fitScore: saved.fit_score,
+    reasoning: saved.notes,
+    description: null,
+    location: null,
+    location_details: null,
+    posted_date: saved.applied_at,
+    valid_through: null,
+    applicant_count: null,
+    is_remote: null,
+    job_type: null,
+    job_level: null,
+    job_function: null,
+    listing_type: null,
+    skills: null,
+    work_from_home: null,
+    vacancy_count: null,
+    experience_range: null,
+    easy_apply: null,
+    salary: "",
+    salary_period: null,
+    salary_minimum: null,
+    salary_maximum: null,
+    salary_currency: null,
+    company_name: saved.company,
+    company_type: null,
+    company_founded: null,
+    company_industry: null,
+    company_url: null,
+    company_website: null,
+    company_logo: null,
+    company_addresses: null,
+    company_revenue: null,
+    company_description: null,
+    company_rating: null,
+    employee_count: null,
+    review_count: null,
+    emails: [],
+    phones: [],
+    social_links: {},
+    platform: null,
+    platform_url: null,
+    official_url: null,
+    deadline: null,
+    postedAt: null,
+  };
+}
+
 export default function SavedJobsPage() {
   const router = useRouter();
   const supabase = createClient();
@@ -47,6 +103,7 @@ export default function SavedJobsPage() {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>("");
+  const [modalJob, setModalJob] = useState<Job | null>(null);
 
   const fetchJobs = useCallback(
     async (userId: string) => {
@@ -146,388 +203,412 @@ export default function SavedJobsPage() {
   }
 
   return (
-    <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "32px 24px" }}>
-      {/* Header */}
-      <div style={{ marginBottom: "32px" }}>
-        <h1
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "28px",
-            fontWeight: 700,
-            color: "var(--white)",
-            margin: "0 0 8px",
-          }}
-        >
-          Saved Jobs
-        </h1>
-        <p style={{ color: "var(--muted)", fontSize: "15px", margin: 0 }}>
-          Track your applications and interview progress
-        </p>
-      </div>
+    <>
+      {/* Job Detail Modal */}
+      {modalJob && (
+        <JobModal job={modalJob} onClose={() => setModalJob(null)} />
+      )}
 
-      {loading ? (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "48px",
-            color: "var(--muted)",
-          }}
-        >
-          <Loader2 size={24} className="animate-spin" />
-        </div>
-      ) : jobs.length === 0 ? (
-        <div
-          style={{
-            background: "var(--surface)",
-            border: "1px solid var(--border)",
-            borderRadius: "16px",
-            padding: "48px 24px",
-            textAlign: "center",
-          }}
-        >
-          <Bookmark
-            size={32}
-            color="var(--muted)"
-            style={{ opacity: 0.3, marginBottom: "12px" }}
-          />
-          <p style={{ fontSize: "15px", color: "var(--muted)", margin: 0 }}>
-            No saved jobs yet. Start saving jobs from the job hunter!
+      <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "32px 24px" }}>
+        {/* Header */}
+        <div style={{ marginBottom: "32px" }}>
+          <h1
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "28px",
+              fontWeight: 700,
+              color: "var(--white)",
+              margin: "0 0 8px",
+            }}
+          >
+            Saved Jobs
+          </h1>
+          <p style={{ color: "var(--muted)", fontSize: "15px", margin: 0 }}>
+            Track your applications and interview progress · Click a job to view details
           </p>
         </div>
-      ) : (
-        <>
-          {/* Status filter */}
+
+        {loading ? (
           <div
             style={{
               display: "flex",
-              gap: "8px",
-              marginBottom: "24px",
-              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "48px",
+              color: "var(--muted)",
             }}
           >
-            <button
-              onClick={() => setFilterStatus("")}
+            <Loader2 size={24} className="animate-spin" />
+          </div>
+        ) : jobs.length === 0 ? (
+          <div
+            style={{
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              borderRadius: "16px",
+              padding: "48px 24px",
+              textAlign: "center",
+            }}
+          >
+            <Bookmark
+              size={32}
+              color="var(--muted)"
+              style={{ opacity: 0.3, marginBottom: "12px" }}
+            />
+            <p style={{ fontSize: "15px", color: "var(--muted)", margin: 0 }}>
+              No saved jobs yet. Start saving jobs from the job hunter!
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Status filter */}
+            <div
               style={{
-                padding: "8px 14px",
-                fontSize: "12px",
-                fontWeight: 500,
-                background:
-                  filterStatus === "" ? "var(--blue)" : "var(--field)",
-                color: filterStatus === "" ? "#fff" : "var(--muted)",
-                border:
-                  "1px solid " +
-                  (filterStatus === "" ? "var(--blue)" : "var(--border-2)"),
-                borderRadius: "8px",
-                cursor: "pointer",
-                transition: "all 0.2s",
-                fontFamily: "var(--font-body)",
-              }}
-              onMouseEnter={(e) => {
-                if (filterStatus === "") {
-                  e.currentTarget.style.background = "var(--blue-glow)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (filterStatus === "") {
-                  e.currentTarget.style.background = "var(--blue)";
-                }
+                display: "flex",
+                gap: "8px",
+                marginBottom: "24px",
+                flexWrap: "wrap",
               }}
             >
-              All ({jobs.length})
-            </button>
-            {Object.entries(statusColors).map(([status, config]) => {
-              const count = jobs.filter((j) => j.status === status).length;
-              return (
-                <button
-                  key={status}
-                  onClick={() => setFilterStatus(status)}
-                  style={{
-                    padding: "8px 14px",
-                    fontSize: "12px",
-                    fontWeight: 500,
-                    background:
-                      filterStatus === status ? config.bg : "var(--field)",
-                    color:
-                      filterStatus === status ? config.text : "var(--muted)",
-                    border:
-                      "1px solid " +
-                      (filterStatus === status
-                        ? config.text
-                        : "var(--border-2)"),
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                    fontFamily: "var(--font-body)",
-                  }}
-                >
-                  {config.label} ({count})
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Jobs table */}
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
-          >
-            {filteredJobs.length > 0 ? (
-              filteredJobs.map((job) => {
-                const config = statusColors[job.status];
-                const appliedDate = job.applied_at
-                  ? new Date(job.applied_at).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })
-                  : "Not applied";
-                const validUrl =
-                  job.job_url &&
-                  (job.job_url.startsWith("http://") ||
-                    job.job_url.startsWith("https://"));
-
+              <button
+                onClick={() => setFilterStatus("")}
+                style={{
+                  padding: "8px 14px",
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  background:
+                    filterStatus === "" ? "var(--blue)" : "var(--field)",
+                  color: filterStatus === "" ? "#fff" : "var(--muted)",
+                  border:
+                    "1px solid " +
+                    (filterStatus === "" ? "var(--blue)" : "var(--border-2)"),
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  fontFamily: "var(--font-body)",
+                }}
+                onMouseEnter={(e) => {
+                  if (filterStatus === "") {
+                    e.currentTarget.style.background = "var(--blue-glow)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (filterStatus === "") {
+                    e.currentTarget.style.background = "var(--blue)";
+                  }
+                }}
+              >
+                All ({jobs.length})
+              </button>
+              {Object.entries(statusColors).map(([status, config]) => {
+                const count = jobs.filter((j) => j.status === status).length;
                 return (
-                  <div
-                    key={job.id}
+                  <button
+                    key={status}
+                    onClick={() => setFilterStatus(status)}
                     style={{
-                      background: "var(--surface)",
-                      border: "1px solid var(--border)",
-                      borderRadius: "12px",
-                      padding: "16px",
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
-                      gap: "16px",
-                      alignItems: "start",
+                      padding: "8px 14px",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      background:
+                        filterStatus === status ? config.bg : "var(--field)",
+                      color:
+                        filterStatus === status ? config.text : "var(--muted)",
+                      border:
+                        "1px solid " +
+                        (filterStatus === status
+                          ? config.text
+                          : "var(--border-2)"),
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      fontFamily: "var(--font-body)",
                     }}
                   >
-                    <div style={{ minWidth: 0 }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "12px",
-                          marginBottom: "10px",
-                        }}
-                      >
-                        <h3
-                          style={{
-                            fontFamily: "var(--font-display)",
-                            fontSize: "16px",
-                            fontWeight: 600,
-                            color: "var(--white)",
-                            margin: 0,
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          {job.job_title}
-                        </h3>
-                        {validUrl && (
-                          <a
-                            href={job.job_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              display: "flex",
-                              color: "var(--blue-light)",
-                              textDecoration: "none",
-                              flexShrink: 0,
-                            }}
-                          >
-                            <ExternalLink size={14} />
-                          </a>
-                        )}
-                      </div>
-                      <p
-                        style={{
-                          fontSize: "13px",
-                          color: "var(--muted)",
-                          margin: "0 0 10px",
-                        }}
-                      >
-                        {job.company}
-                      </p>
-                      {job.notes && (
-                        <p
-                          style={{
-                            fontSize: "12px",
-                            color: "var(--cream)",
-                            fontStyle: "italic",
-                            margin: 0,
-                            opacity: 0.8,
-                          }}
-                        >
-                          {job.notes}
-                        </p>
-                      )}
-                    </div>
+                    {config.label} ({count})
+                  </button>
+                );
+              })}
+            </div>
 
+            {/* Jobs list */}
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+            >
+              {filteredJobs.length > 0 ? (
+                filteredJobs.map((job) => {
+                  const config = statusColors[job.status];
+                  const appliedDate = job.applied_at
+                    ? new Date(job.applied_at).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })
+                    : "Not applied";
+                  const validUrl =
+                    job.job_url &&
+                    (job.job_url.startsWith("http://") ||
+                      job.job_url.startsWith("https://"));
+
+                  return (
                     <div
+                      key={job.id}
+                      onClick={() => setModalJob(toJob(job))}
                       style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "10px",
-                        alignItems: "flex-end",
-                        flexShrink: 0,
+                        background: "var(--surface)",
+                        border: "1px solid var(--border)",
+                        borderRadius: "12px",
+                        padding: "16px",
+                        display: "grid",
+                        gridTemplateColumns: "1fr auto",
+                        gap: "16px",
+                        alignItems: "start",
+                        cursor: "pointer",
+                        transition: "border-color 0.2s, background 0.2s",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = "rgba(37,99,235,0.4)";
+                        e.currentTarget.style.background = "var(--surface-hover)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "var(--border)";
+                        e.currentTarget.style.background = "var(--surface)";
                       }}
                     >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                        }}
-                      >
+                      <div style={{ minWidth: 0 }}>
                         <div
                           style={{
                             display: "flex",
-                            flexDirection: "column",
                             alignItems: "center",
-                            background: "rgba(37,99,235,0.12)",
-                            border: "1px solid rgba(37,99,235,0.2)",
-                            borderRadius: "8px",
-                            padding: "6px 12px",
+                            gap: "12px",
+                            marginBottom: "10px",
                           }}
                         >
-                          <span
+                          <h3
                             style={{
-                              fontSize: "14px",
-                              fontWeight: 700,
-                              color: "#60a5fa",
                               fontFamily: "var(--font-display)",
+                              fontSize: "16px",
+                              fontWeight: 600,
+                              color: "var(--white)",
+                              margin: 0,
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
                             }}
                           >
-                            {job.fit_score}%
-                          </span>
-                          <span
+                            {job.job_title}
+                          </h3>
+                          {validUrl && (
+                            <a
+                              href={job.job_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              style={{
+                                display: "flex",
+                                color: "var(--blue-light)",
+                                textDecoration: "none",
+                                flexShrink: 0,
+                              }}
+                            >
+                              <ExternalLink size={14} />
+                            </a>
+                          )}
+                        </div>
+                        <p
+                          style={{
+                            fontSize: "13px",
+                            color: "var(--muted)",
+                            margin: "0 0 10px",
+                          }}
+                        >
+                          {job.company}
+                        </p>
+                        {job.notes && (
+                          <p
                             style={{
-                              fontSize: "9px",
-                              color: "#60a5fa",
+                              fontSize: "12px",
+                              color: "var(--cream)",
+                              fontStyle: "italic",
+                              margin: 0,
                               opacity: 0.8,
                             }}
                           >
-                            fit
-                          </span>
-                        </div>
+                            {job.notes}
+                          </p>
+                        )}
+                      </div>
 
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "10px",
+                          alignItems: "flex-end",
+                          flexShrink: 0,
+                        }}
+                      >
                         <div
                           style={{
                             display: "flex",
-                            flexDirection: "column",
                             alignItems: "center",
-                            background: config.bg,
-                            border: `1px solid ${config.text}`,
-                            borderRadius: "8px",
-                            padding: "6px 12px",
+                            gap: "8px",
                           }}
                         >
-                          <select
-                            value={job.status}
-                            onChange={(e) =>
-                              handleStatusChange(job.id, e.target.value)
-                            }
+                          <div
                             style={{
-                              background: "transparent",
-                              border: "none",
-                              color: config.text,
-                              fontSize: "12px",
-                              fontWeight: 600,
-                              fontFamily: "var(--font-body)",
-                              cursor: "pointer",
-                              padding: 0,
-                              outline: "none",
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              background: "rgba(37,99,235,0.12)",
+                              border: "1px solid rgba(37,99,235,0.2)",
+                              borderRadius: "8px",
+                              padding: "6px 12px",
                             }}
                           >
-                            <option value="applied">
-                              {statusColors.applied.label}
-                            </option>
-                            <option value="interviewing">
-                              {statusColors.interviewing.label}
-                            </option>
-                            <option value="offer">
-                              {statusColors.offer.label}
-                            </option>
-                            <option value="rejected">
-                              {statusColors.rejected.label}
-                            </option>
-                          </select>
+                            <span
+                              style={{
+                                fontSize: "14px",
+                                fontWeight: 700,
+                                color: "#60a5fa",
+                                fontFamily: "var(--font-display)",
+                              }}
+                            >
+                              {job.fit_score}%
+                            </span>
+                            <span
+                              style={{
+                                fontSize: "9px",
+                                color: "#60a5fa",
+                                opacity: 0.8,
+                              }}
+                            >
+                              fit
+                            </span>
+                          </div>
+
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              background: config.bg,
+                              border: `1px solid ${config.text}`,
+                              borderRadius: "8px",
+                              padding: "6px 12px",
+                            }}
+                          >
+                            <select
+                              value={job.status}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                handleStatusChange(job.id, e.target.value);
+                              }}
+                              style={{
+                                background: "transparent",
+                                border: "none",
+                                color: config.text,
+                                fontSize: "12px",
+                                fontWeight: 600,
+                                fontFamily: "var(--font-body)",
+                                cursor: "pointer",
+                                padding: 0,
+                                outline: "none",
+                              }}
+                            >
+                              <option value="applied">
+                                {statusColors.applied.label}
+                              </option>
+                              <option value="interviewing">
+                                {statusColors.interviewing.label}
+                              </option>
+                              <option value="offer">
+                                {statusColors.offer.label}
+                              </option>
+                              <option value="rejected">
+                                {statusColors.rejected.label}
+                              </option>
+                            </select>
+                          </div>
                         </div>
-                      </div>
 
-                      <p
-                        style={{
-                          fontSize: "11px",
-                          color: "var(--muted)",
-                          margin: 0,
-                        }}
-                      >
-                        {appliedDate}
-                      </p>
+                        <p
+                          style={{
+                            fontSize: "11px",
+                            color: "var(--muted)",
+                            margin: 0,
+                          }}
+                        >
+                          {appliedDate}
+                        </p>
 
-                      <button
-                        onClick={() => handleDelete(job.id)}
-                        disabled={deleting === job.id}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          width: "36px",
-                          height: "36px",
-                          background: "rgba(239,68,68,0.08)",
-                          border: "1px solid rgba(239,68,68,0.2)",
-                          borderRadius: "8px",
-                          color: "#f87171",
-                          cursor:
-                            deleting === job.id ? "not-allowed" : "pointer",
-                          transition: "all 0.2s",
-                        }}
-                        onMouseEnter={(e) => {
-                          if (deleting !== job.id) {
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(job.id);
+                          }}
+                          disabled={deleting === job.id}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: "36px",
+                            height: "36px",
+                            background: "rgba(239,68,68,0.08)",
+                            border: "1px solid rgba(239,68,68,0.2)",
+                            borderRadius: "8px",
+                            color: "#f87171",
+                            cursor:
+                              deleting === job.id ? "not-allowed" : "pointer",
+                            transition: "all 0.2s",
+                          }}
+                          onMouseEnter={(e) => {
+                            if (deleting !== job.id) {
+                              e.currentTarget.style.background =
+                                "rgba(239,68,68,0.15)";
+                            }
+                          }}
+                          onMouseLeave={(e) => {
                             e.currentTarget.style.background =
-                              "rgba(239,68,68,0.15)";
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background =
-                            "rgba(239,68,68,0.08)";
-                        }}
-                        title="Delete job"
-                      >
-                        {deleting === job.id ? (
-                          <Loader2 size={16} className="animate-spin" />
-                        ) : (
-                          <Trash2 size={16} />
-                        )}
-                      </button>
+                              "rgba(239,68,68,0.08)";
+                          }}
+                          title="Delete job"
+                        >
+                          {deleting === job.id ? (
+                            <Loader2 size={16} className="animate-spin" />
+                          ) : (
+                            <Trash2 size={16} />
+                          )}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                );
-              })
-            ) : (
-              <div
-                style={{
-                  textAlign: "center",
-                  padding: "48px",
-                  color: "var(--muted)",
-                  background: "var(--surface)",
-                  border: "1px dashed var(--border)",
-                  borderRadius: "12px",
-                }}
-              >
-                <Briefcase
-                  size={28}
-                  style={{ opacity: 0.3, marginBottom: "12px" }}
-                />
-                <p style={{ fontSize: "13px", margin: 0 }}>
-                  No jobs match the selected status
-                </p>
-              </div>
-            )}
-          </div>
-        </>
-      )}
-    </div>
+                  );
+                })
+              ) : (
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: "48px",
+                    color: "var(--muted)",
+                    background: "var(--surface)",
+                    border: "1px dashed var(--border)",
+                    borderRadius: "12px",
+                  }}
+                >
+                  <Briefcase
+                    size={28}
+                    style={{ opacity: 0.3, marginBottom: "12px" }}
+                  />
+                  <p style={{ fontSize: "13px", margin: 0 }}>
+                    No jobs match the selected status
+                  </p>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </>
   );
 }

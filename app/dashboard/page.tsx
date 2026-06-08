@@ -18,6 +18,8 @@ import {
   Trash2,
   Clock,
   Bookmark,
+  Target,
+  KanbanSquare,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -286,14 +288,15 @@ export default function DashboardPage() {
               style={{
                 width: "30px",
                 height: "30px",
-                background: "linear-gradient(135deg, #2563eb, #3b82f6)",
+                // background: "linear-gradient(135deg, #2563eb, #3b82f6)",
                 borderRadius: "8px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Zap size={15} color="#fff" />
+              {/* <Zap size={15} color="#fff" /> */}
+              <img src="/favicon.ico" alt="Logo" style={{ width: '30px', height: '30px', borderRadius: '8px' }} />
             </div>
             <span
               style={{
@@ -418,6 +421,60 @@ export default function DashboardPage() {
             >
               <MessageSquare size={16} />
               AI assistant
+            </Link>
+
+            <Link
+              href="/dashboard/goals"
+              style={{
+                borderRadius: "8px",
+                padding: "10px 14px",
+                fontSize: "14.5px",
+                fontWeight: 500,
+                color: "var(--muted)",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                textDecoration: "none",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--surface-hover)";
+                e.currentTarget.style.color = "var(--cream)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "var(--muted)";
+              }}
+            >
+              <Target size={16} />
+              Goals & Calendar
+            </Link>
+
+            <Link
+              href="/dashboard/kanban"
+              style={{
+                borderRadius: "8px",
+                padding: "10px 14px",
+                fontSize: "14.5px",
+                fontWeight: 500,
+                color: "var(--muted)",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                textDecoration: "none",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--surface-hover)";
+                e.currentTarget.style.color = "var(--cream)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "var(--muted)";
+              }}
+            >
+              <KanbanSquare size={16} />
+              Kanban tracker
             </Link>
 
             <div
@@ -746,6 +803,64 @@ export default function DashboardPage() {
                     }}
                   >
                     Readiness, gaps, roadmaps, letters
+                  </p>
+                </div>
+              </Link>
+
+              <Link
+                href="/dashboard/kanban"
+                style={{
+                  background: "rgba(16,185,129,0.06)",
+                  border: "1px solid rgba(16,185,129,0.2)",
+                  borderRadius: "16px",
+                  padding: "24px",
+                  textDecoration: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "16px",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = "rgba(16,185,129,0.1)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "rgba(16,185,129,0.06)")
+                }
+              >
+                <div
+                  style={{
+                    width: "44px",
+                    height: "44px",
+                    background: "rgba(16,185,129,0.15)",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <KanbanSquare size={20} color="#34d399" />
+                </div>
+                <div>
+                  <p
+                    style={{
+                      margin: "0 0 3px",
+                      fontSize: "15px",
+                      fontWeight: 600,
+                      color: "var(--white)",
+                      fontFamily: "var(--font-display)",
+                    }}
+                  >
+                    Kanban Tracker
+                  </p>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "12.5px",
+                      color: "var(--muted)",
+                    }}
+                  >
+                    Drag & drop application pipeline
                   </p>
                 </div>
               </Link>
@@ -1105,8 +1220,8 @@ export default function DashboardPage() {
                           opacity: deletingId === doc.id ? 0.5 : 1,
                         }}
                         onMouseEnter={(e) =>
-                          (e.currentTarget.style.borderColor =
-                            "var(--border-2)")
+                        (e.currentTarget.style.borderColor =
+                          "var(--border-2)")
                         }
                         onMouseLeave={(e) =>
                           (e.currentTarget.style.borderColor = "var(--border)")
