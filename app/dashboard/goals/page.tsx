@@ -401,7 +401,7 @@ export default function GoalsDashboard() {
       <aside style={{ width: "260px", background: "#FFFEF0", borderRight: "3px solid #0A0A0A", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "32px 20px", boxSizing: "border-box" }}>
         <div>
           <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: "10px", textDecoration: "none", marginBottom: "36px" }}>
-            <div style={{ width: "28px", height: "28px", background: "#C8FF00", border: "2px solid #0A0A0A", display: "flex", alignItems: "center", justifyOrigin: "center", justifyContent: "center", boxShadow: "2px 2px 0px #0A0A0A" }}>
+            <div style={{ width: "28px", height: "28px", background: "#C8FF00", border: "2px solid #0A0A0A", display: "flex", alignItems: "center",  justifyContent: "center", boxShadow: "2px 2px 0px #0A0A0A" }}>
               <Zap size={14} color="#0A0A0A" style={{ fill: "#0A0A0A" }} />
             </div>
             <span style={{ fontWeight: 900, fontSize: "18px", color: "#0A0A0A", textTransform: "uppercase", letterSpacing: "-0.02em" }}>CareerPilot</span>
