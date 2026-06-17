@@ -583,7 +583,7 @@ export default function GoalsDashboard() {
               
               {/* Month Dimension Grid Map */}
               <div style={{ background: "transparent", border: "3px solid #0A0A0A", padding: "24px", boxShadow: "4px 4px 0px #0A0A0A" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyOrigin: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
                   <h3 style={{ fontSize: "16px", fontWeight: 900, textTransform: "uppercase", margin: 0 }}>
                     {currentDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
                   </h3>
