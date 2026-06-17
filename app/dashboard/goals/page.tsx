@@ -49,33 +49,27 @@ export default function GoalsDashboard() {
   const router = useRouter();
   const supabase = createClient();
 
-  // Auth States
   const [user, setUser] = useState<any>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
 
-  // Application Domain Registers
   const [goals, setGoals] = useState<Goal[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loadingData, setLoadingData] = useState(true);
 
-  // Modal / Transaction States
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // Buffer registers for Goal construction 
   const [goalTitle, setGoalTitle] = useState("");
   const [goalDesc, setGoalDesc] = useState("");
   const [goalTargetDate, setGoalTargetDate] = useState("");
 
-  // Buffer registers for Task construction
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDesc, setTaskDesc] = useState("");
   const [taskDueDate, setTaskDueDate] = useState("");
   const [taskPriority, setTaskPriority] = useState<"low" | "medium" | "high">("medium");
   const [taskGoalId, setTaskGoalId] = useState("");
 
-  // Temporal Tracking Registers
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDayTasks, setSelectedDayTasks] = useState<Task[]>([]);
   const [selectedDayGoals, setSelectedDayGoals] = useState<Goal[]>([]);
@@ -230,7 +224,7 @@ export default function GoalsDashboard() {
   };
 
   const handleDeleteGoal = async (goalId: string) => {
-    if (!confirm("Confirm hard purge of target matrix and dependent array chains?")) return;
+    if (!confirm("Delete this goal and all its tasks? This can't be undone.")) return;
     try {
       setGoals((prev) => prev.filter((g) => g.id !== goalId));
       setTasks((prev) => prev.filter((t) => t.goal_id !== goalId));
@@ -389,7 +383,7 @@ export default function GoalsDashboard() {
     return (
       <div style={{ minHeight: "100vh", background: "#FFFEF0", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "'Space Grotesk', sans-serif", gap: "12px" }}>
         <Loader2 className="animate-spin" size={32} color="#0047FF" />
-        <p style={{ fontSize: "12px", fontWeight: 900, textTransform: "uppercase", color: "#0A0A0A" }}>Synchronizing Manifest Coordinates...</p>
+        <p style={{ fontSize: "12px", fontWeight: 900, textTransform: "uppercase", color: "#0A0A0A" }}>Loading your goals...</p>
       </div>
     );
   }
@@ -397,7 +391,7 @@ export default function GoalsDashboard() {
   return (
     <div style={{ minHeight: "100vh", background: "#FFFEF0", display: "flex", color: "#0A0A0A", fontFamily: "'Space Grotesk', sans-serif" }}>
       
-      {/* Sidebar Terminal Component */}
+      {/* Sidebar */}
       {/* <aside style={{ width: "260px", background: "#FFFEF0", borderRight: "3px solid #0A0A0A", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "32px 20px", boxSizing: "border-box" }}>
         <div>
           <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: "10px", textDecoration: "none", marginBottom: "36px" }}>
@@ -408,45 +402,45 @@ export default function GoalsDashboard() {
           </Link>
 
           <div style={{ background: "#FFFEF0", border: "2px solid #0A0A0A", padding: "12px 14px", marginBottom: "28px", boxShadow: "3px 3px 0px #0A0A0A" }}>
-            <p style={{ margin: "0 0 4px", fontSize: "10px", color: "#666", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em" }}>OPERATOR ID</p>
+            <p style={{ margin: "0 0 4px", fontSize: "10px", color: "#666", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em" }}>SIGNED IN AS</p>
             <p style={{ margin: 0, fontSize: "13px", fontWeight: 700, textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>{user?.email}</p>
           </div>
 
           <nav style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             <Link href="/dashboard" style={sidebarLinkStyle(false)}><Zap size={15} />Overview</Link>
             <Link href="/dashboard/jobs" style={sidebarLinkStyle(false)}><Briefcase size={15} />Job Hunter</Link>
-            <Link href="/dashboard/assistant" style={sidebarLinkStyle(false)}><MessageSquare size={15} />AI Terminal</Link>
-            <Link href="/dashboard/goals" style={sidebarLinkStyle(true)}><Target size={15} />Goals & Ledger</Link>
+            <Link href="/dashboard/assistant" style={sidebarLinkStyle(false)}><MessageSquare size={15} />AI Assistant</Link>
+            <Link href="/dashboard/goals" style={sidebarLinkStyle(true)}><Target size={15} />Goals & Tasks</Link>
             <div style={{ borderTop: "2px dashed #0A0A0A", my: "4px", paddingTop: "6px" }} />
-            <Link href="/dashboard/searches" style={sidebarLinkStyle(false)}><Clock size={15} />Index Logs</Link>
-            <Link href="/dashboard/saved-jobs" style={sidebarLinkStyle(false)}><Bookmark size={15} />Saved Nodes</Link>
+            <Link href="/dashboard/searches" style={sidebarLinkStyle(false)}><Clock size={15} />Search History</Link>
+            <Link href="/dashboard/saved-jobs" style={sidebarLinkStyle(false)}><Bookmark size={15} />Saved Jobs</Link>
           </nav>
         </div>
 
         <button onClick={handleLogout} style={{ background: "#FF5500", border: "2px solid #0A0A0A", padding: "12px", color: "#FFFEF0", cursor: "pointer", fontSize: "13px", fontWeight: 800, textTransform: "uppercase", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", boxShadow: "3px 3px 0px #0A0A0A" }}>
-          <LogOut size={15} />Sign Out Terminal
+          <LogOut size={15} />Sign Out
         </button>
       </aside> */}
 
-      {/* Main Content Workspace Layout */}
+      {/* Main Content */}
       <main style={{ flex: 1, padding: "40px", overflowY: "auto", boxSizing: "border-box" }}>
         
-        {/* Core Control Panel Deck Header */}
+        {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", marginBottom: "36px", border: "3px solid #0A0A0A", padding: "24px", boxShadow: "5px 5px 0px #0A0A0A" }}>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
               <div style={{ width: "6px", height: "24px", background: "#FF5500", border: "2px solid #0A0A0A" }} />
-              <h1 style={{ fontSize: "24px", fontWeight: 900, textTransform: "uppercase", margin: 0, letterSpacing: "-0.01em" }}>Goals & Milestone Deadlines</h1>
+              <h1 style={{ fontSize: "24px", fontWeight: 900, textTransform: "uppercase", margin: 0, letterSpacing: "-0.01em" }}>Goals & Deadlines</h1>
             </div>
-            <p style={{ color: "#555", fontSize: "14px", margin: 0, fontWeight: 500 }}>Establish execution vectors, segment task maps, and handle target chronological thresholds.</p>
+            <p style={{ color: "#555", fontSize: "14px", margin: 0, fontWeight: 500 }}>Set goals, break them into tasks, and stay on top of deadlines.</p>
           </div>
 
           <div style={{ display: "flex", gap: "12px" }}>
             <button onClick={() => setShowGoalModal(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 18px", background: "#FFFEF0", border: "2px solid #0A0A0A", color: "#0A0A0A", fontSize: "13px", fontWeight: 800, textTransform: "uppercase", cursor: "pointer", boxShadow: "3px 3px 0px #0A0A0A" }}>
-              <Plus size={15} /> New Goal Matrix
+              <Plus size={15} /> New Goal
             </button>
             <button onClick={() => setShowTaskModal(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 18px", background: "#0047FF", color: "#FFFEF0", border: "2px solid #0A0A0A", fontSize: "13px", fontWeight: 800, textTransform: "uppercase", cursor: "pointer", boxShadow: "3px 3px 0px #0A0A0A" }}>
-              <Plus size={15} /> Append Task Item
+              <Plus size={15} /> New Task
             </button>
           </div>
         </div>
@@ -458,17 +452,17 @@ export default function GoalsDashboard() {
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: "32px" }} className="content-grid">
             
-            {/* LEFT COLUMN: CRITICAL PATH STRATEGIES & OPERATIONAL TASKS */}
+            {/* LEFT COLUMN: GOALS & TASKS */}
             <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
               
-              {/* Active Career Strategy Blocks */}
+              {/* Goals */}
               <div style={{ background: "transparent", border: "3px solid #0A0A0A", padding: "24px", boxShadow: "4px 4px 0px #0A0A0A" }}>
-                <h2 style={{ fontSize: "16px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.02em", margin: "0 0 20px" }}>Strategic Matrix Tracks</h2>
+                <h2 style={{ fontSize: "16px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.02em", margin: "0 0 20px" }}>Your Goals</h2>
 
                 {goals.length === 0 ? (
                   <div style={{ textAlign: "center", padding: "40px 0", border: "2px dashed rgba(0,0,0,0.15)" }}>
                     <Target size={28} style={{ marginBottom: "12px" }} />
-                    <p style={{ fontSize: "13px", fontWeight: 700, textTransform: "uppercase", margin: 0 }}>Zero Strategy Tracks Initialized</p>
+                    <p style={{ fontSize: "13px", fontWeight: 700, textTransform: "uppercase", margin: 0 }}>No goals yet</p>
                   </div>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -482,13 +476,13 @@ export default function GoalsDashboard() {
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", marginBottom: "12px" }}>
                             <div>
                               <h3 style={{ fontSize: "15px", fontWeight: 900, textTransform: "uppercase", margin: "0 0 4px" }}>{goal.title}</h3>
-                              <p style={{ fontSize: "13px", color: "#444", margin: 0, fontWeight: 500, lineHeight: 1.4 }}>{goal.description || "Context parameters unassigned."}</p>
+                              <p style={{ fontSize: "13px", color: "#444", margin: 0, fontWeight: 500, lineHeight: 1.4 }}>{goal.description || "No description."}</p>
                             </div>
                             <div style={{ display: "flex", gap: "6px" }}>
                               <select value={goal.status} onChange={(e) => handleUpdateGoalStatus(goal.id, e.target.value as any)} style={{ background: "#FFFEF0", border: "2px solid #0A0A0A", fontSize: "11px", fontWeight: 800, textTransform: "uppercase", padding: "4px", outline: "none", cursor: "pointer" }}>
-                                <option value="in_progress">Processing</option>
-                                <option value="completed">Resolved</option>
-                                <option value="failed">Halted</option>
+                                <option value="in_progress">In progress</option>
+                                <option value="completed">Done</option>
+                                <option value="failed">Dropped</option>
                               </select>
                               <button onClick={() => handleDeleteGoal(goal.id)} style={{ background: "transparent", border: "none", color: "#FF5500", cursor: "pointer", padding: "4px" }}>
                                 <Trash2 size={15} />
@@ -496,11 +490,11 @@ export default function GoalsDashboard() {
                             </div>
                           </div>
 
-                          {/* Linear Metrics Progress Framework */}
+                          {/* Progress bar */}
                           <div style={{ marginBottom: "12px" }}>
                             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", fontWeight: 800, textTransform: "uppercase", marginBottom: "4px" }}>
-                              <span>Convergence Scale</span>
-                              <span>{stats.completed}/{stats.total} Nodes ({stats.percentage}%)</span>
+                              <span>Progress</span>
+                              <span>{stats.completed}/{stats.total} tasks ({stats.percentage}%)</span>
                             </div>
                             <div style={{ height: "14px", background: "#FFFEF0", border: "2px solid #0A0A0A", overflow: "hidden" }}>
                               <div style={{ width: `${stats.percentage}%`, height: "100%", background: "#C8FF00", borderRight: stats.percentage > 0 ? "2px solid #0A0A0A" : "none", transition: "width 0.3s cubic-bezier(0.16, 1, 0.3, 1)" }} />
@@ -509,8 +503,8 @@ export default function GoalsDashboard() {
 
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", fontWeight: 700 }}>
                             <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: isOverdue ? "#FF5500" : "rgba(0,0,0,0.04)", color: isOverdue ? "#FFFEF0" : "#0A0A0A", border: isOverdue ? "1px solid #0A0A0A" : "none", padding: "2px 6px" }}>
-                              <Calendar size={12} /> Target: {targetDate.toLocaleDateString()}
-                              {isOverdue && <span style={{ fontWeight: 900, display: "inline-flex", alignItems: "center", gap: "2px" }}><AlertTriangle size={10} /> CRITICAL OVERDUE</span>}
+                              <Calendar size={12} /> Due: {targetDate.toLocaleDateString()}
+                              {isOverdue && <span style={{ fontWeight: 900, display: "inline-flex", alignItems: "center", gap: "2px" }}><AlertTriangle size={10} /> OVERDUE</span>}
                             </span>
                           </div>
                         </div>
@@ -520,14 +514,14 @@ export default function GoalsDashboard() {
                 )}
               </div>
 
-              {/* Functional Itemized Registers */}
+              {/* Tasks */}
               <div style={{ background: "transparent", border: "3px solid #0A0A0A", padding: "24px", boxShadow: "4px 4px 0px #0A0A0A" }}>
-                <h2 style={{ fontSize: "16px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.02em", margin: "0 0 20px" }}>Operational Task Registry</h2>
+                <h2 style={{ fontSize: "16px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.02em", margin: "0 0 20px" }}>Your Tasks</h2>
 
                 {tasks.length === 0 ? (
                   <div style={{ textAlign: "center", padding: "40px 0", border: "2px dashed rgba(0,0,0,0.15)" }}>
                     <CheckCircle2 size={28} style={{ marginBottom: "12px" }} />
-                    <p style={{ fontSize: "13px", fontWeight: 700, textTransform: "uppercase", margin: 0 }}>Register Vector Clean</p>
+                    <p style={{ fontSize: "13px", fontWeight: 700, textTransform: "uppercase", margin: 0 }}>All caught up</p>
                   </div>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -555,13 +549,13 @@ export default function GoalsDashboard() {
                             <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", fontSize: "11px", fontWeight: 700 }}>
                               {task.due_date && (
                                 <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: isOverdue ? "#FF5500" : "#666" }}>
-                                  <Calendar size={12} /> Limit: {new Date(task.due_date).toLocaleDateString()}
-                                  {isOverdue && <span style={{ fontWeight: 900 }}>[OVERDUE BOUND]</span>}
+                                  <Calendar size={12} /> Due: {new Date(task.due_date).toLocaleDateString()}
+                                  {isOverdue && <span style={{ fontWeight: 900 }}>[OVERDUE]</span>}
                                 </span>
                               )}
                               {task.goal_id && task.goals && (
                                 <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "#0047FF", textTransform: "uppercase" }}>
-                                  <Target size={12} /> Track: {task.goals.title}
+                                  <Target size={12} /> Goal: {task.goals.title}
                                 </span>
                               )}
                             </div>
@@ -578,10 +572,10 @@ export default function GoalsDashboard() {
               </div>
             </div>
 
-            {/* RIGHT COLUMN: RECTILINEAR SCHEDULE DECK */}
+            {/* RIGHT COLUMN: CALENDAR */}
             <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
               
-              {/* Month Dimension Grid Map */}
+              {/* Calendar */}
               <div style={{ background: "transparent", border: "3px solid #0A0A0A", padding: "24px", boxShadow: "4px 4px 0px #0A0A0A" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
                   <h3 style={{ fontSize: "16px", fontWeight: 900, textTransform: "uppercase", margin: 0 }}>
@@ -604,21 +598,21 @@ export default function GoalsDashboard() {
                 </div>
               </div>
 
-              {/* Matrix Node Focal Inspector */}
+              {/* Day detail */}
               <div style={{ background: "transparent", border: "3px solid #0A0A0A", padding: "24px", boxShadow: "4px 4px 0px #0A0A0A", minHeight: "180px" }}>
                 <h3 style={{ fontSize: "14px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.01em", margin: "0 0 16px", paddingBottom: "8px", borderBottom: "2px dashed #0A0A0A" }}>
-                  {selectedDateStr ? `Threshold Logs // ${selectedDateStr}` : "Focus Node Inspection Parameters"}
+                  {selectedDateStr ? `What's due on ${selectedDateStr}` : "Click a day to see what's due"}
                 </h3>
 
                 {selectedDateStr ? (
                   selectedDayTasks.length === 0 && selectedDayGoals.length === 0 ? (
-                    <p style={{ fontSize: "13px", color: "#666", fontWeight: 500, margin: 0 }}>No chronological deadlocks noted for this cycle.</p>
+                    <p style={{ fontSize: "13px", color: "#666", fontWeight: 500, margin: 0 }}>Nothing due that day.</p>
                   ) : (
                     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                       {selectedDayGoals.map((g) => (
                         <div key={g.id} style={{ background: "#FFFEF0", border: "2px solid #0A0A0A", padding: "10px 12px", display: "flex", alignItems: "center", gap: "8px", boxShadow: "2px 2px 0px #0A0A0A" }}>
                           <Target size={14} color="#FF5500" />
-                          <span style={{ fontSize: "12px", fontWeight: 800, textTransform: "uppercase", color: "#FF5500" }}>Strategy Target: {g.title}</span>
+                          <span style={{ fontSize: "12px", fontWeight: 800, textTransform: "uppercase", color: "#FF5500" }}>Goal: {g.title}</span>
                         </div>
                       ))}
 
@@ -636,7 +630,7 @@ export default function GoalsDashboard() {
                     </div>
                   )
                 ) : (
-                  <p style={{ fontSize: "13px", color: "#666", fontWeight: 500, margin: 0 }}>Select an absolute operational sub-node day inside the tracker coordinate array grid above.</p>
+                  <p style={{ fontSize: "13px", color: "#666", fontWeight: 500, margin: 0 }}>Pick a date on the calendar to see its goals and tasks.</p>
                 )}
               </div>
             </div>
@@ -644,71 +638,71 @@ export default function GoalsDashboard() {
         )}
       </main>
 
-      {/* Goal Matrix Creator Component Modal */}
+      {/* Goal modal */}
       {showGoalModal && (
         <div onClick={() => setShowGoalModal(false)} style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(10,10,10,0.5)", backdropFilter: "blur(4px)" }}>
           <form onSubmit={handleCreateGoal} onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: "460px", background: "#FFFEF0", border: "3px solid #0A0A0A", padding: "28px", display: "flex", flexDirection: "column", gap: "16px", boxShadow: "8px 8px 0px #0A0A0A" }}>
-            <h3 style={{ fontSize: "18px", fontWeight: 900, textTransform: "uppercase", margin: 0 }}>Initialize Target Strategy</h3>
+            <h3 style={{ fontSize: "18px", fontWeight: 900, textTransform: "uppercase", margin: 0 }}>New Goal</h3>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>STRATEGY TITLE IDENTIFIER</label>
-              <input type="text" value={goalTitle} onChange={(e) => setGoalTitle(e.target.value)} placeholder="e.g. INFRASTRUCTURE ROLE ACQUISITION" required style={{ padding: "10px", background: "#FFFEF0", border: "2px solid #0A0A0A", color: "#0A0A0A", fontFamily: "inherit", fontWeight: 700, outline: "none" }} />
+              <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>GOAL TITLE</label>
+              <input type="text" value={goalTitle} onChange={(e) => setGoalTitle(e.target.value)} placeholder="e.g. Land a backend engineering role" required style={{ padding: "10px", background: "#FFFEF0", border: "2px solid #0A0A0A", color: "#0A0A0A", fontFamily: "inherit", fontWeight: 700, outline: "none" }} />
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>OPERATIONAL SPECIFICATION PARAMETERS</label>
-              <textarea value={goalDesc} onChange={(e) => setGoalDesc(e.target.value)} placeholder="Detail the structural scope requirements..." rows={3} style={{ padding: "10px", background: "#FFFEF0", border: "2px solid #0A0A0A", color: "#0A0A0A", fontFamily: "inherit", fontWeight: 500, outline: "none", resize: "none" }} />
+              <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>DESCRIPTION (OPTIONAL)</label>
+              <textarea value={goalDesc} onChange={(e) => setGoalDesc(e.target.value)} placeholder="What does this goal involve?" rows={3} style={{ padding: "10px", background: "#FFFEF0", border: "2px solid #0A0A0A", color: "#0A0A0A", fontFamily: "inherit", fontWeight: 500, outline: "none", resize: "none" }} />
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>CHRONOLOGICAL LIMIT BOUNDARY</label>
+              <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>TARGET DATE</label>
               <input type="date" value={goalTargetDate} onChange={(e) => setGoalTargetDate(e.target.value)} required style={{ padding: "10px", background: "#FFFEF0", border: "2px solid #0A0A0A", color: "#0A0A0A", fontFamily: "inherit", fontWeight: 700, outline: "none" }} />
             </div>
 
             <div style={{ display: "flex", gap: "12px", marginTop: "12px" }}>
-              <button type="button" onClick={() => setShowGoalModal(false)} style={{ flex: 1, padding: "12px", background: "transparent", border: "2px solid #0A0A0A", fontWeight: 800, textTransform: "uppercase", cursor: "pointer" }}>Abort</button>
-              <button type="submit" disabled={submitting} style={{ flex: 1, padding: "12px", background: "#C8FF00", border: "2px solid #0A0A0A", color: "#0A0A0A", fontWeight: 900, textTransform: "uppercase", cursor: "pointer", boxShadow: "2px 2px 0px #0A0A0A" }}>{submitting ? "Seeding..." : "Commit Vector"}</button>
+              <button type="button" onClick={() => setShowGoalModal(false)} style={{ flex: 1, padding: "12px", background: "transparent", border: "2px solid #0A0A0A", fontWeight: 800, textTransform: "uppercase", cursor: "pointer" }}>Cancel</button>
+              <button type="submit" disabled={submitting} style={{ flex: 1, padding: "12px", background: "#C8FF00", border: "2px solid #0A0A0A", color: "#0A0A0A", fontWeight: 900, textTransform: "uppercase", cursor: "pointer", boxShadow: "2px 2px 0px #0A0A0A" }}>{submitting ? "Saving..." : "Save goal"}</button>
             </div>
           </form>
         </div>
       )}
 
-      {/* Task Matrix Creator Component Modal */}
+      {/* Task modal */}
       {showTaskModal && (
         <div onClick={() => setShowTaskModal(false)} style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(10,10,10,0.5)", backdropFilter: "blur(4px)" }}>
           <form onSubmit={handleCreateTask} onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: "460px", background: "#FFFEF0", border: "3px solid #0A0A0A", padding: "28px", display: "flex", flexDirection: "column", gap: "16px", boxShadow: "8px 8px 0px #0A0A0A" }}>
-            <h3 style={{ fontSize: "18px", fontWeight: 900, textTransform: "uppercase", margin: 0 }}>Append Task Parameter Block</h3>
+            <h3 style={{ fontSize: "18px", fontWeight: 900, textTransform: "uppercase", margin: 0 }}>New Task</h3>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>TASK TITLE RECORD</label>
-              <input type="text" value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} placeholder="e.g. PROFILE SANITIZATION AND REFACTOR" required style={{ padding: "10px", background: "#FFFEF0", border: "2px solid #0A0A0A", color: "#0A0A0A", fontFamily: "inherit", fontWeight: 700, outline: "none" }} />
+              <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>TASK TITLE</label>
+              <input type="text" value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} placeholder="e.g. Update CV and add latest project" required style={{ padding: "10px", background: "#FFFEF0", border: "2px solid #0A0A0A", color: "#0A0A0A", fontFamily: "inherit", fontWeight: 700, outline: "none" }} />
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>ANNOTATION SUB-LOG</label>
-              <textarea value={taskDesc} onChange={(e) => setTaskDesc(e.target.value)} placeholder="Functional breakdown descriptions..." rows={2} style={{ padding: "10px", background: "#FFFEF0", border: "2px solid #0A0A0A", color: "#0A0A0A", fontFamily: "inherit", fontWeight: 500, outline: "none", resize: "none" }} />
+              <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>NOTES (OPTIONAL)</label>
+              <textarea value={taskDesc} onChange={(e) => setTaskDesc(e.target.value)} placeholder="Any details about this task..." rows={2} style={{ padding: "10px", background: "#FFFEF0", border: "2px solid #0A0A0A", color: "#0A0A0A", fontFamily: "inherit", fontWeight: 500, outline: "none", resize: "none" }} />
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
               <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>DUE LIMIT</label>
+                <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>DUE DATE</label>
                 <input type="date" value={taskDueDate} onChange={(e) => setTaskDueDate(e.target.value)} style={{ padding: "10px", background: "#FFFEF0", border: "2px solid #0A0A0A", color: "#0A0A0A", fontFamily: "inherit", fontWeight: 700, outline: "none" }} />
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>CRITICALITY RANK</label>
+                <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>PRIORITY</label>
                 <select value={taskPriority} onChange={(e) => setTaskPriority(e.target.value as any)} style={{ padding: "10px", background: "#FFFEF0", border: "2px solid #0A0A0A", color: "#0A0A0A", fontFamily: "inherit", fontWeight: 700, outline: "none", cursor: "pointer" }}>
-                  <option value="low">LOW PRIORITY</option>
-                  <option value="medium">MEDIUM CORE</option>
-                  <option value="high">HIGH CRITICAL</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
                 </select>
               </div>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>LINKED PARENT TRACK MATRIX</label>
+              <label style={{ fontSize: "11px", fontWeight: 900, color: "#0A0A0A" }}>LINK TO A GOAL (OPTIONAL)</label>
               <select value={taskGoalId} onChange={(e) => setTaskGoalId(e.target.value)} style={{ padding: "10px", background: "#FFFEF0", border: "2px solid #0A0A0A", color: "#0A0A0A", fontFamily: "inherit", fontWeight: 700, outline: "none", cursor: "pointer" }}>
-                <option value="">STANDALONE NODE OBJECT</option>
+                <option value="">Standalone task</option>
                 {goals.map((goal) => (
                   <option key={goal.id} value={goal.id}>{goal.title}</option>
                 ))}
@@ -716,8 +710,8 @@ export default function GoalsDashboard() {
             </div>
 
             <div style={{ display: "flex", gap: "12px", marginTop: "12px" }}>
-              <button type="button" onClick={() => setShowTaskModal(false)} style={{ flex: 1, padding: "12px", background: "transparent", border: "2px solid #0A0A0A", fontWeight: 800, textTransform: "uppercase", cursor: "pointer" }}>Abort</button>
-              <button type="submit" disabled={submitting} style={{ flex: 1, padding: "12px", background: "#0047FF", border: "2px solid #0A0A0A", color: "#FFFEF0", fontWeight: 900, textTransform: "uppercase", cursor: "pointer", boxShadow: "2px 2px 0px #0A0A0A" }}>{submitting ? "Appending..." : "Inject Node"}</button>
+              <button type="button" onClick={() => setShowTaskModal(false)} style={{ flex: 1, padding: "12px", background: "transparent", border: "2px solid #0A0A0A", fontWeight: 800, textTransform: "uppercase", cursor: "pointer" }}>Cancel</button>
+              <button type="submit" disabled={submitting} style={{ flex: 1, padding: "12px", background: "#0047FF", border: "2px solid #0A0A0A", color: "#FFFEF0", fontWeight: 900, textTransform: "uppercase", cursor: "pointer", boxShadow: "2px 2px 0px #0A0A0A" }}>{submitting ? "Saving..." : "Save task"}</button>
             </div>
           </form>
         </div>
