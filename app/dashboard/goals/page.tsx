@@ -398,7 +398,7 @@ export default function GoalsDashboard() {
     <div style={{ minHeight: "100vh", background: "#FFFEF0", display: "flex", color: "#0A0A0A", fontFamily: "'Space Grotesk', sans-serif" }}>
       
       {/* Sidebar Terminal Component */}
-      <aside style={{ width: "260px", background: "#FFFEF0", borderRight: "3px solid #0A0A0A", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "32px 20px", boxSizing: "border-box" }}>
+      {/* <aside style={{ width: "260px", background: "#FFFEF0", borderRight: "3px solid #0A0A0A", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "32px 20px", boxSizing: "border-box" }}>
         <div>
           <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: "10px", textDecoration: "none", marginBottom: "36px" }}>
             <div style={{ width: "28px", height: "28px", background: "#C8FF00", border: "2px solid #0A0A0A", display: "flex", alignItems: "center",  justifyContent: "center", boxShadow: "2px 2px 0px #0A0A0A" }}>
@@ -426,7 +426,7 @@ export default function GoalsDashboard() {
         <button onClick={handleLogout} style={{ background: "#FF5500", border: "2px solid #0A0A0A", padding: "12px", color: "#FFFEF0", cursor: "pointer", fontSize: "13px", fontWeight: 800, textTransform: "uppercase", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", boxShadow: "3px 3px 0px #0A0A0A" }}>
           <LogOut size={15} />Sign Out Terminal
         </button>
-      </aside>
+      </aside> */}
 
       {/* Main Content Workspace Layout */}
       <main style={{ flex: 1, padding: "40px", overflowY: "auto", boxSizing: "border-box" }}>
